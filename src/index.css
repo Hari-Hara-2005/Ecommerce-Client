@@ -1,0 +1,136 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  scrollbar-width: none;
+}
+.hero_bg {
+  background-image: url("SMART.jpg");
+  height: 97vh;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: 50% 50%;
+}
+
+@media (max-width: 768px) {
+  .hero_bg {
+    
+  background-image: url("SMART1.jpg");
+  height: 97vh;
+  background-repeat: no-repeat;
+    background-size: 100% 100%; 
+    background-position: 40% 40%;
+  }
+} 
+
+/* 
+Adjustments for tablets
+@media (max-width: 768px) {
+  .hero_bg {
+    background-size: 80% 50%; 
+    background-position: 50% 50%;
+  }
+} */
+
+/* Adjustments for mobile devices */
+/* Styles for devices between 320px and 425px */
+/* @media (min-width: 320px) and (max-width: 425px) {
+  .hero_bg {
+    background-size: 100% 20%;
+    background-position: 50% 53%;
+  }
+} */
+/* @media (min-width: 320px) and (max-width: 359px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 70%;
+  }
+}
+
+@media (min-width: 360px) and (max-width: 374px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 42%;
+  }
+}
+@media (min-width: 375px) and (max-width: 380px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 52%;
+  }
+}
+@media (min-width: 390px) and (max-width: 391px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 48%;
+  }
+}
+@media (min-width: 392px) and (max-width: 400px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 42%;
+  }
+}
+@media (min-width: 412px) and (max-width: 413px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 39%;
+  }
+}
+@media (min-width: 414px) and (max-width: 420px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 45%;
+  }
+}
+@media (min-width: 425px) and (max-width: 427px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 40%;
+  }
+}
+@media (min-width: 428px) and (max-width: 450px) {
+  .hero_bg {
+    background-size: 100% 15%;
+    background-position: 50% 46%;
+  }
+} */
+/* Styles for devices between 375px and 480px */
+/* @media (min-width: 375px) and (max-width: 480px) {
+  .hero_bg {
+    background-size: 100% 20%;
+    background-position: 50% 58%;
+  }
+} */
+
+/* Styles for devices between 390px and 480px */
+/* @media (min-width: 390px) and (max-width: 480px) {
+  .hero_bg {
+    background-size: 100% 20%;
+    background-position: 50% 58%;
+  }
+} */
+
+/* Styles for devices between 400px and 768px */
+/* @media (min-width: 400px) and (max-width: 768px) {
+  .hero_bg {
+    background-size: 100% 20%;
+    background-position: 50% 50%;
+  }
+} */
+
+/* Styles for devices between 480px and 768px */
+/* @media (min-width: 480px) and (max-width: 768px) {
+  .hero_bg {
+    background-size: 100% 20%; /* Adjust as needed */
+    /* background-position: 50% 62%; */
+  /* }
+} */
+
+/* Styles for devices larger than 768px */
+/* @media (min-width: 769px) {
+  .hero_bg {
+    background-size: 100% 40%; /* Adjust as needed */
+    /* background-position: 50% 55%;
+  }
+} */ 
