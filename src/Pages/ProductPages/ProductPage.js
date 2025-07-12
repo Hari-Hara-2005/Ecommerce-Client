@@ -14,7 +14,6 @@ import Footer from '../../Component/Footer';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/cartSlice';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api';

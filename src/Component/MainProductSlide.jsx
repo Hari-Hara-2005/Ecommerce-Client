@@ -1,105 +1,114 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
-import 'swiper/css';
-import 'swiper/css/navigation';
-import { Navigation, Autoplay } from 'swiper/modules';
-const industryData = [
-    { id: "1", img: "Images/mpi/img1.png" },
-    { id: "2", img: "Images/mpi/img2.png" },
-    { id: "3", img: "Images/mpi/img3.png" },
-    { id: "4", img: "Images/mpi/img4.png" },
-    { id: "5", img: "Images/mpi/img5.png" },
-    { id: "6", img: "Images/mpi/img6.png" },
-    { id: "7", img: "Images/mpi/img7.png" },
-    { id: "8", img: "Images/mpi/img8.png" },
-    { id: "9", img: "Images/mpi/img9.png" },
-    { id: "10", img: "Images/mpi/img10.png" },
-    { id: "11", img: "Images/mpi/img11.png" },
-    { id: "12", img: "Images/mpi/img12.png" },
-    { id: "13", img: "Images/mpi/img13.png" },
-    { id: "14", img: "Images/mpi/img14.png" }
-];
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation, Autoplay } from "swiper/modules";
+import api from "../api";
 
 const MainProductSlide = () => {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [slidesPerView, setSlidesPerView] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [slidesPerView, setSlidesPerView] = useState(1);
+  const [banners, setBanner] = useState([]);
 
-    const handleSlideChange = (swiper) => {
-        setActiveIndex(swiper.activeIndex);
+  const fetchData = async () => {
+    try {
+      const response = await api.get("/api/banner");
+      setBanner(response.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const handleSlideChange = (swiper) => {
+    setActiveIndex(swiper.activeIndex);
+  };
+
+  useEffect(() => {
+    const updateSlidesPerView = () => {
+      if (window.innerWidth >= 1700) {
+        setSlidesPerView(3);
+      } else if (window.innerWidth >= 1280) {
+        setSlidesPerView(3);
+      } else if (window.innerWidth >= 700) {
+        setSlidesPerView(3);
+      } else {
+        setSlidesPerView(3);
+      }
     };
+    fetchData();
+    updateSlidesPerView();
+    window.addEventListener("resize", updateSlidesPerView);
+    return () => window.removeEventListener("resize", updateSlidesPerView);
+  }, []);
 
-    useEffect(() => {
-        const updateSlidesPerView = () => {
-            if (window.innerWidth >= 1700) {
-                setSlidesPerView(3);
-            } else if (window.innerWidth >= 1280) {
-                setSlidesPerView(3);
-            } else if (window.innerWidth >= 700) {
-                setSlidesPerView(3);
-            } else {
-                setSlidesPerView(3);
-            }
-        };
-
-        updateSlidesPerView();
-        window.addEventListener('resize', updateSlidesPerView);
-        return () => window.removeEventListener('resize', updateSlidesPerView);
-    }, []);
-
-    return (
-        <>
-            <Box sx={{ display: 'flex', alignContent: 'center', height: ['120%', '130%', '85%','85%','85%'] }}>
-                <Swiper
-                    slidesPerView={slidesPerView}
-                    navigation={false}
-                    spaceBetween={0}
-                    modules={[Navigation, Autoplay]}
-                    className="mySwiper"
-                    autoplay={{ delay: 2500, disableOnInteraction: false }}
-                    onSlideChange={handleSlideChange}
-                    breakpoints={{
-                        700: {
-                            slidesPerView: 3,
-                            centeredSlides: false,
-                        },
-                        1280: {
-                            slidesPerView: 3,
-                            centeredSlides: false,
-                        },
-                        1700: {
-                            slidesPerView: 3,
-                            centeredSlides: false,
-                        },
-                    }}
-                >
-                    {industryData.map((item, index) => (
-                        <SwiperSlide key={index}>
-                            <Box
-                                sx={{
-                                    position: 'relative',
-                                    width: { xs: "70%", sm: "60%", md: "60%", lg: "45%", xl: "45%" },
-                                    cursor: 'pointer',
-                                    transform: (index === activeIndex + Math.floor(slidesPerView / 2)) ? ['scale(1.5)', 'scale(1.5)', 'scale(1.09)'] : 'scale(0.4)',
-                                    transition: 'transform 0.3s ease',
-                                }}
-                            >
-                                <img
-                                    src={item.img}
-                                    alt='Product Iamge'
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover',
-                                    }}
-                                />
-                            </Box>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
-            </Box>
-            <style>
-                {`
+  return (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          alignContent: "center",
+          height: ["120%", "130%", "85%", "85%", "85%"],
+        }}
+      >
+        <Swiper
+          slidesPerView={slidesPerView}
+          navigation={false}
+          spaceBetween={0}
+          modules={[Navigation, Autoplay]}
+          className="mySwiper"
+          autoplay={{ delay: 2500, disableOnInteraction: false }}
+          onSlideChange={handleSlideChange}
+          breakpoints={{
+            700: {
+              slidesPerView: 3,
+              centeredSlides: false,
+            },
+            1280: {
+              slidesPerView: 3,
+              centeredSlides: false,
+            },
+            1700: {
+              slidesPerView: 3,
+              centeredSlides: false,
+            },
+          }}
+        >
+          {banners.map((banner, index) => (
+            <SwiperSlide key={banner.id}>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: {
+                    xs: "70%",
+                    sm: "60%",
+                    md: "60%",
+                    lg: "45%",
+                    xl: "45%",
+                  },
+                  cursor: "pointer",
+                  transform:
+                    index === activeIndex + Math.floor(slidesPerView / 2)
+                      ? ["scale(1.5)", "scale(1.5)", "scale(1.09)"]
+                      : "scale(0.4)",
+                  transition: "transform 0.3s ease",
+                }}
+              >
+                <img
+                  src={banner.image_url}
+                  alt="Product Iamge"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </Box>
+      <style>
+        {`
                     .swiper {
                         width: 100%;
                         height: 100%;
@@ -182,9 +191,9 @@ const MainProductSlide = () => {
                         }
                     }
                 `}
-            </style>
-        </>
-    );
+      </style>
+    </>
+  );
 };
 
 export default MainProductSlide;

@@ -62,12 +62,10 @@ export default function Navbar(props) {
   const [productMenuItems, setItem] = useState([]);
   const fetchData = async () => {
     try {
-      const baseUrl = process.env.REACT_APP_API_BASE_URL;
       const { data } = await api.get("/api/category");
       setItem(data);
     } catch (error) {
-      console.error("Error fetching categories:", error.message);
-      console.log("API base URL:", process.env.REACT_APP_API_BASE_URL);
+      console.error(error.message);
     }
   };
 
