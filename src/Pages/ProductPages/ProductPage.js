@@ -68,11 +68,11 @@ const ProductCard = ({ product, isLoading }) => {
 
   const handleAddToCart = () => {
     dispatch(addToCart({
-      id: product.id,
-      name: product.name,
-      image: product.image,
-      price,
-      originalPrice,
+      id: product.product_id,
+      name: product.product_name,
+      image: product.image_url,
+      price: product.product_price * selectedQty,
+      originalPrice: product.product_price * 0 * 1.2,
       selectedQty
     }));
     toast.success('Successfully added to cart!', {
@@ -83,8 +83,6 @@ const ProductCard = ({ product, isLoading }) => {
 
   const [liked, setLiked] = useState(false);
   const [selectedQty, setselectedQty] = useState(1);
-  const [price, setPrice] = useState(0);
-  const [originalPrice, setOriginalPrice] = useState(0);
   const quantities = [
     { label: "250 gm", multiplier: 1 },
     { label: "500 gm", multiplier: 2 },
@@ -104,7 +102,7 @@ const ProductCard = ({ product, isLoading }) => {
   };
 
   const handleShoppingClick = (product) => {
-    const encodedMessage = encodeURIComponent(`Hi! I'm interested in this product:\n\nName: ${product.name}\nPrice: ${price}\n\nPockets: ${selectedQty}\n\nPlease provide more details and help me place an order.`);
+    const encodedMessage = encodeURIComponent(`Hi! I'm interested in this product:\n\nName: ${product.name}\nPrice:\n\nPockets: ${selectedQty}\n\nPlease provide more details and help me place an order.`);
     const whatsappNumber = '919952857016';
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
@@ -112,7 +110,7 @@ const ProductCard = ({ product, isLoading }) => {
 
   const handleShareClick = async (product) => {
     const shareUrl = `https://smartdryfruitdryfruit.vercel.app/dates`;
-    const message = `Check out this amazing product: ${product.name}\nPrice: ${price}\n${shareUrl}`;
+    const message = `Check out this amazing product: ${product.name}\nPrice:\n${shareUrl}`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappNumber = '+919952857016';
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;

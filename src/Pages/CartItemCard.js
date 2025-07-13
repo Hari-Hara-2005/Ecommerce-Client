@@ -10,7 +10,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     fontWeight: 900,
     boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
     borderRadius: 16,
-    border:'2px solid #92553D',
+    border: '2px solid #92553D',
     position: 'relative',
     display: 'flex',
     flexDirection: 'row',
@@ -26,11 +26,11 @@ const CartItemCard = ({ product, onRemove }) => {
                     component="img"
                     image={product.image}
                     alt={product.name}
-                    sx={{ width: '100%', height: 'auto'}}
+                    sx={{ width: '100%', height: 'auto' }}
                 />
             </Box>
-            <CardContent sx={{ flex: '1 1 auto', ml: [0,2] }}>
-                <Typography variant="h6" sx={{ fontWeight: 700,textAlign:'start' }}>
+            <CardContent sx={{ flex: '1 1 auto', ml: [0, 2] }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, textAlign: 'start' }}>
                     {product.name}
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 600, mt: 1, display: 'flex', alignItems: 'center' }}>
@@ -38,17 +38,17 @@ const CartItemCard = ({ product, onRemove }) => {
                     {product.brandName || 'Smart Dry Fruits'}
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 1, textAlign: 'start' }}>
-                    {product.selectedGram}
+                    {product.selectedQty}
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 2 }}>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                        {product.price}
+                        ₹{product.price}
                     </Typography>
                     <Typography variant="body2" sx={{ textDecoration: "line-through", color: "gray" }}>
-                        {product.originalPrice}
+                        ₹{product.originalPrice}
                     </Typography>
                 </Stack>
-                <Box sx={{ display: 'flex',alignItems: 'center', py: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
                     <Button variant="contained" sx={{
                         bgcolor: "#92553D", textTransform: 'none', borderRadius: '50px', px: [2.5], '&:hover': {
                             bgcolor: "#282828"

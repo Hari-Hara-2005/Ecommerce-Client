@@ -5,6 +5,7 @@ import { Contact } from './Pages/Contact-Us';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import ProductPage from './Pages/ProductPages/ProductPage';
+import Cart from './Pages/Cart';
 const App = () => {
   return (
     <Provider store={store}>
@@ -14,6 +15,7 @@ const App = () => {
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
           <Route path="/category/:slug" element={<ProductPage />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </BrowserRouter>
     </Provider>
