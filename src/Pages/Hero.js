@@ -1,5 +1,5 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { animateHero } from '../gsapAnimations';
 import Navbar from '../Component/Navbar';
 import StickyWhatsapp from '../Component/StickyWhatsapp';
@@ -11,26 +11,26 @@ import Footer from '../Component/Footer';
 import { Link } from 'react-router-dom';
 import MainProductSlide from '../Component/MainProductSlide';
 import { ScrollDownButton } from '../Component/ScrollDownButton';
+import api from '../api';
 
 const Hero = () => {
     useEffect(() => {
         animateHero();
+        fetchData();
     }, []);
 
-    const industryData = [
-        { id: "1", img: "Images/ProductsImages/ourproducts images/dates.png", title: "Dates", link: "/dates" },
-        { id: "2", img: "Images/ProductsImages/ourproducts images/nuts.png", title: "Nuts", link: "/nuts" },
-        { id: "3", img: "Images/ProductsImages/ourproducts images/seeds.webp", title: "Seeds", link: "/seeds" },
-        { id: "4", img: "Images/ProductsImages/ourproducts images/dryfruitss.jpg", title: "Dry Fruits", link: "/dryfruits" },
-        { id: "5", img: "Images/ProductsImages/ourproducts images/choco.avif", title: "Chocolates", link: "/chocolates" },
-        { id: "6", img: "Images/ProductsImages/ourproducts images/juice.jpeg", title: "Drinks", link: "/juice" },
-        { id: "7", img: "Images/ProductsImages/ourproducts images/energy.jpeg", title: "Powder", link: "/powder" },
-        { id: "8", img: "Images/ProductsImages/ourproducts images/biscuits.jpeg", title: "Biscuits", link: "/biscuit" },
-    ];
-
+    const [industryData, setIndustryData] = useState([]);
+    const fetchData = async () => {
+        try {
+            const response = await api.get("/api/category");
+            setIndustryData(response.data);
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
     const ScrollToTop = () => {
         window.scrollTo(0, 0)
-      }
+    }
     return (
         <Box>
             <StickyWhatsapp link={"https://wa.me/7339534672"} />
@@ -39,18 +39,18 @@ const Hero = () => {
                 <MainProductSlide />
                 <ScrollDownButton />
             </Box>
-            <Box sx={{ height: ['90vh','70vh','70vh','70vh', '80vh'], bgcolor: '#92553D' }}>
+            <Box sx={{ height: ['90vh', '70vh', '70vh', '70vh', '80vh'], bgcolor: '#92553D' }}>
                 <Navbar color="#fff" />
-                <Box sx={{ display: 'flex', flexDirection: ['column', 'column', 'row'], alignItems: 'center', justifyContent: "space-between", height: ['75%'], px: [2.5, 5, 5,11] }}>
+                <Box sx={{ display: 'flex', flexDirection: ['column', 'column', 'row'], alignItems: 'center', justifyContent: "space-between", height: ['75%'], px: [2.5, 5, 5, 11] }}>
                     <Box sx={{ display: 'flex', justifyContent: ['center', 'center', 'normal'], }}>
-                        <Box component='img' src='Images/img-4.png' alt='Cover 2' sx={{ width: ["90%", "80%","80%","100%", "42rem"] }} />
+                        <Box component='img' src='Images/img-4.png' alt='Cover 2' sx={{ width: ["90%", "80%", "80%", "100%", "42rem"] }} />
                     </Box>
                     <Box sx={{ width: ["100%", "100%", "50%"] }}>
                         <Typography sx={{
                             fontSize: ['1.5rem', '1.5rem', '2.5rem'],
                             fontWeight: '600',
                             color: '#FFF',
-                            py: [2.5,1],
+                            py: [2.5, 1],
                         }}>
                             Flavour Updated
                         </Typography>
@@ -67,7 +67,7 @@ const Hero = () => {
                     sx={{
                         width: ["70%", "50%", "30%"],
                         ml: [-10],
-                        mt: [54, 20,0, -5,-5],
+                        mt: [54, 20, 0, -5, -5],
                         position: 'absolute',
                     }}
                 />
@@ -86,7 +86,7 @@ const Hero = () => {
                             }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <Link
-                                        to={item.link}
+                                        to={`/category/${item.slug}`}
                                         onClick={ScrollToTop}
                                         color={"inherit"}
                                         style={{ textDecoration: 'none' }}
@@ -95,7 +95,7 @@ const Hero = () => {
                                         <Box sx={{ width: ["100%", "100%", "100%", "100%", '25rem'] }}>
                                             <Box
                                                 component='img'
-                                                src={item.img}
+                                                src={item.image_url}
                                                 alt='pack'
                                                 sx={{
                                                     width: ["100%"],
@@ -115,7 +115,7 @@ const Hero = () => {
                                             textAlign: 'center',
                                             letterSpacing: 1,
                                         }}>
-                                            {item.title}
+                                            {item.category_name}
                                         </Typography>
                                     </Link>
                                 </Box>
