@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-
+//change 
 const CategorySection = ({ industryData }) => {
   return (
     <Box
