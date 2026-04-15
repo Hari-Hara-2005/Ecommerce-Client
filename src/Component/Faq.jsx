@@ -3,7 +3,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
-import { Box, Button } from "@mui/material";
+import { Box} from "@mui/material";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 export default function Faq() {
@@ -45,15 +45,7 @@ export default function Faq() {
     const [expand, setExpand] = React.useState(false);
     const [expanded, setExpanded] = React.useState(false);
 
-    const handleExpand = () => {
-        if (expand) {
-            setCurrentFaq(faqs.slice(0, 7));
-            setExpand(false);
-        } else {
-            setCurrentFaq(faqs);
-            setExpand(true);
-        }
-    };
+  
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);

@@ -20,7 +20,7 @@ export const Contact = () => {
                 alt='pack'
                 sx={{
                     width: ["100%"],
-                    height: ['50vh','65vh'],
+                    height: ['50vh', '65vh'],
                     position: 'absolute',
                     mt: [2, 4, 3],
                     zIndex: -2
@@ -65,15 +65,17 @@ export const Contact = () => {
                 </Box>
             </Box>
             <Box sx={{
-                mx: 'auto', mx: [2, 5], height: ['16rem', '25rem', '25rem', '30rem', '35rem'], border: 2, borderColor: '#92553D', borderRadius: '13px', boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.19), 0px 6px 6px rgba(0, 0, 0, 0.23)' }} >
+                mx: [2, 5], height: ['16rem', '25rem', '25rem', '30rem', '35rem'], border: 2, borderColor: '#92553D', borderRadius: '13px', boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.19), 0px 6px 6px rgba(0, 0, 0, 0.23)'
+            }} >
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.060694083806!2d79.37425997480764!3d10.95878798920133!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baacd55129f3d37%3A0xeee2cd83d8b7f6ac!2sSmart%20dry%20fruits!5e0!3m2!1sen!2sin!4v1723128713816!5m2!1sen!2sin"
                     width="100%"
                     height='100%'
                     style={{ borderRadius: '15px', border: 'none' }}
+                    title='map'
                 />
             </Box>
-            <Box sx={{ bgcolor: 'black', mt: [10,16], px: 2 }}>
+            <Box sx={{ bgcolor: 'black', mt: [10, 16], px: 2 }}>
                 <Footer />
             </Box>
         </>

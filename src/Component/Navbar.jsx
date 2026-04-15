@@ -55,8 +55,7 @@ export default function Navbar(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openDropdown = Boolean(anchorEl);
-  const theme = useTheme();
-
+ 
   const [productMenuItems, setItem] = useState([]);
   const fetchData = async () => {
     try {

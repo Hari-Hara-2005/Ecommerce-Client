@@ -1,4 +1,4 @@
-import { Card, CardContent, CardMedia, IconButton, Typography, Grid, Box, Stack, Button, Skeleton, Select, MenuItem, InputLabel } from '@mui/material';
+import { Card, CardContent, IconButton, Typography, Grid, Box, Stack, Button, Skeleton, Select, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import StarIcon from '@mui/icons-material/Star';
@@ -304,7 +304,7 @@ const ProductPage = () => {
   useEffect(() => {
     setProducts([]);
     fetchData();
-  }, [slug]);
+  }, [slug, fetchData]);
   useEffect(() => {
     document.title = categoryName || "SmartDry Fruits";
   }, [categoryName]);

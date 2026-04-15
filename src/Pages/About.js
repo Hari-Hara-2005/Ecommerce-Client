@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Navbar from '../Component/Navbar';
 import Title from '../Component/Title';
-import { Box, Button, Divider, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { styled } from '@mui/system';
