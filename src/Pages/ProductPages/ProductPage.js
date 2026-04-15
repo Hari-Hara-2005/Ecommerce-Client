@@ -285,23 +285,20 @@ const ProductPage = () => {
   const { slug } = useParams();
   const [products, setProducts] = useState([]);
   const [categoryName, setcategoryName] = useState('');
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await api.get(`/api/product/${slug}`);
-      setProducts(data.data.products);
-      setcategoryName(data.data.category);
-    }
-    catch (error) {
-      console.log(error.message);
-      setIsLoading(true);
-    }
-    finally {
-      setIsLoading(false);
-    }
-  }
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await api.get(`/api/product/${slug}`);
+        setProducts(data.data.products);
+        setcategoryName(data.data.category);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     setProducts([]);
     fetchData();
   }, [slug]);
