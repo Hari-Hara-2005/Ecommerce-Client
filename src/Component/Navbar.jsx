@@ -17,7 +17,6 @@ import {
   CssBaseline,
   Menu,
   MenuItem,
-  useTheme,
   Badge,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";

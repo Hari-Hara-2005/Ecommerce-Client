@@ -304,7 +304,7 @@ const ProductPage = () => {
   useEffect(() => {
     setProducts([]);
     fetchData();
-  }, [slug, fetchData]);
+  }, [slug]);
   useEffect(() => {
     document.title = categoryName || "SmartDry Fruits";
   }, [categoryName]);

@@ -37,7 +37,7 @@ export const About = () => {
         // { id: "5", img: "/Images/aboutimage/img3.jpg", title: "Nuts 3" },
         { id: "6", img: "/Images/AboutImages/img5.jpg", title: "Nuts 4" },
         { id: "7", img: "/Images/AboutImages/img6.jpg", title: "Nuts 5" },
-  
+
     ];
 
     const FeatureContainer = styled(Box)(({ theme }) => ({
@@ -53,38 +53,38 @@ export const About = () => {
         },
     }));
 
-const FeatureItem = styled(Grid)(({ theme }) => ({
-    textAlign: 'center',
-    padding: theme.spacing(2),
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    '& svg': {
-        color: '#f00',
-        transition: 'transform 0.3s, color 0.3s',
-    },
-    '&:hover svg': {
-        transform: 'scale(1.2)',
-        color: '#fff',
-    },
-    '&:hover p': {
-        color: '#f00',
-    },
-    [theme.breakpoints.down('md')]: {
-        '&:nth-of-type(1), &:nth-of-type(2)': {
-            borderBottom: '2px solid rgba(255, 255, 255, 0.2)',
+    const FeatureItem = styled(Grid)(({ theme }) => ({
+        textAlign: 'center',
+        padding: theme.spacing(2),
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        '& svg': {
+            color: '#f00',
+            transition: 'transform 0.3s, color 0.3s',
         },
-        '&:nth-of-type(1), &:nth-of-type(3)': {
-            borderRight: '2px solid rgba(255, 255, 255, 0.2)',
+        '&:hover svg': {
+            transform: 'scale(1.2)',
+            color: '#fff',
         },
-    },
-    [theme.breakpoints.up('md')]: {
-        '&:nth-of-type(1), &:nth-of-type(3)': {
-            borderRight: '2px solid rgba(255, 255, 255, 0.2)',
+        '&:hover p': {
+            color: '#f00',
         },
-        '&:not(:nth-of-type(4))': {
-            borderRight: '2px solid rgba(255, 255, 255, 0.2)',
+        [theme.breakpoints.down('md')]: {
+            '&:nth-of-type(1), &:nth-of-type(2)': {
+                borderBottom: '2px solid rgba(255, 255, 255, 0.2)',
+            },
+            '&:nth-of-type(1), &:nth-of-type(3)': {
+                borderRight: '2px solid rgba(255, 255, 255, 0.2)',
+            },
         },
-    },
-}));
+        [theme.breakpoints.up('md')]: {
+            '&:nth-of-type(1), &:nth-of-type(3)': {
+                borderRight: '2px solid rgba(255, 255, 255, 0.2)',
+            },
+            '&:not(:nth-of-type(4))': {
+                borderRight: '2px solid rgba(255, 255, 255, 0.2)',
+            },
+        },
+    }));
 
 
     useEffect(() => {
@@ -194,9 +194,9 @@ const FeatureItem = styled(Grid)(({ theme }) => ({
                             height: { xs: "19rem", sm: "18rem", md: "25rem", lg: "25rem", xl: "25rem" },
                         }}
                     >
-                        <img
+                        <image
                             src="Images/smart shop 5.jpeg"
-                            alt="Store Image"
+                            alt="StoreImage"
                             style={{
                                 width: '100%',
                                 height: '100%',
@@ -263,7 +263,7 @@ const FeatureItem = styled(Grid)(({ theme }) => ({
                             Hey, We Aren't That Far!
                         </Typography>
                         <Typography>
-                        Explore our premium selection of dry fruits, nuts, chocolates, and more. Whether you're looking for a healthy snack or a delicious treat, we offer the finest quality products to satisfy your cravings. Freshness and flavor are just a click away !                        </Typography>
+                            Explore our premium selection of dry fruits, nuts, chocolates, and more. Whether you're looking for a healthy snack or a delicious treat, we offer the finest quality products to satisfy your cravings. Freshness and flavor are just a click away !                        </Typography>
                         <Typography sx={{
                             fontSize: ['1rem', '1.2rem', '1rem'],
                             fontWeight: '600',
