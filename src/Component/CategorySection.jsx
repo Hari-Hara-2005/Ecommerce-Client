@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-//change 
+//change
 const CategorySection = ({ industryData }) => {
   return (
     <Box
@@ -37,6 +37,7 @@ const CategorySection = ({ industryData }) => {
           {/* Image */}
           <img
             src={item.category_image}
+            alt="category"
             style={{
               width: "100%",
               height: "100%",

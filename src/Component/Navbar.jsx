@@ -17,7 +17,6 @@ import {
   CssBaseline,
   Menu,
   MenuItem,
-  useMediaQuery,
   useTheme,
   Badge,
 } from "@mui/material";
@@ -57,7 +56,6 @@ export default function Navbar(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const openDropdown = Boolean(anchorEl);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [productMenuItems, setItem] = useState([]);
   const fetchData = async () => {

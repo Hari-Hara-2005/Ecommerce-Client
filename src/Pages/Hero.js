@@ -1,5 +1,5 @@
-import { Box, Button, Grid, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Box, Grid, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { animateHero } from '../gsapAnimations';
 import Navbar from '../Component/Navbar';
 import StickyWhatsapp from '../Component/StickyWhatsapp';
