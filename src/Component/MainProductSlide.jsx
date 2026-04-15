@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
+
+// Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
-import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css/pagination";
+
+// Swiper modules
+import { Navigation, Autoplay, Pagination } from "swiper/modules";
+
 import api from "../api";
 
 const MainProductSlide = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [slidesPerView, setSlidesPerView] = useState(1);
   const [banners, setBanner] = useState([]);
 
   const fetchData = async () => {
@@ -19,83 +23,45 @@ const MainProductSlide = () => {
       console.log(error.message);
     }
   };
-  const handleSlideChange = (swiper) => {
-    setActiveIndex(swiper.activeIndex);
-  };
 
   useEffect(() => {
-    const updateSlidesPerView = () => {
-      if (window.innerWidth >= 1700) {
-        setSlidesPerView(3);
-      } else if (window.innerWidth >= 1280) {
-        setSlidesPerView(3);
-      } else if (window.innerWidth >= 700) {
-        setSlidesPerView(3);
-      } else {
-        setSlidesPerView(3);
-      }
-    };
     fetchData();
-    updateSlidesPerView();
-    window.addEventListener("resize", updateSlidesPerView);
-    return () => window.removeEventListener("resize", updateSlidesPerView);
   }, []);
 
   return (
     <>
       <Box
         sx={{
-          display: "flex",
-          alignContent: "center",
-          height: ["120%", "130%", "85%", "85%", "85%"],
+          width: "100%",
+          height: {
+            xs: "200px",
+            sm: "300px",
+            md: "400px",
+            lg: "800px",
+          },
+          overflow: "hidden",
+          mt: "2%",
         }}
       >
         <Swiper
-          slidesPerView={slidesPerView}
-          navigation={false}
+          slidesPerView={1}
           spaceBetween={0}
-          modules={[Navigation, Autoplay]}
-          className="mySwiper"
+          modules={[Navigation, Autoplay, Pagination]}
           autoplay={{ delay: 2500, disableOnInteraction: false }}
-          onSlideChange={handleSlideChange}
-          breakpoints={{
-            700: {
-              slidesPerView: 3,
-              centeredSlides: false,
-            },
-            1280: {
-              slidesPerView: 3,
-              centeredSlides: false,
-            },
-            1700: {
-              slidesPerView: 3,
-              centeredSlides: false,
-            },
+          loop={true}
+          navigation={true}
+          pagination={{
+            clickable: true,
+            dynamicBullets: true, // 🔥 sliding feel
           }}
+          className="mySwiper"
         >
-          {banners.map((banner, index) => (
+          {banners.map((banner) => (
             <SwiperSlide key={banner.id}>
-              <Box
-                sx={{
-                  position: "relative",
-                  width: {
-                    xs: "70%",
-                    sm: "60%",
-                    md: "60%",
-                    lg: "45%",
-                    xl: "45%",
-                  },
-                  cursor: "pointer",
-                  transform:
-                    index === activeIndex + Math.floor(slidesPerView / 2)
-                      ? ["scale(1.5)", "scale(1.5)", "scale(1.09)"]
-                      : "scale(0.4)",
-                  transition: "transform 0.3s ease",
-                }}
-              >
+              <Box sx={{ width: "100%", height: "100%" }}>
                 <img
                   src={banner.image_url}
-                  alt="Product Iamge"
+                  alt="Banner"
                   style={{
                     width: "100%",
                     height: "100%",
@@ -107,90 +73,65 @@ const MainProductSlide = () => {
           ))}
         </Swiper>
       </Box>
+
       <style>
         {`
-                    .swiper {
-                        width: 100%;
-                        height: 100%;
-                    }
+          .swiper {
+            width: 100%;
+            height: 100%;
+          }
 
-                    .swiper-slide {
-                        text-align: center;
-                        font-size: 18px;
-                        display: flex;
-                        align-items: center;
-                          justify-content: center;
-                    }
+          .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
 
-                    .swiper-slide img {
-                        display: block;
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                    }
+          /* 🔥 Navigation Arrows */
+          .swiper-button-next,
+          .swiper-button-prev {
+            color: #000;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+          }
 
-                    .swiper {
-                        margin-left: auto;
-                        margin-right: auto;
-                    }
+          .swiper-button-next::after,
+          .swiper-button-prev::after {
+            font-size: 18px;
+            font-weight: bold;
+          }
 
-                    .swiper-button-next,
-                    .swiper-button-prev {
-                    display:none;
-                        background-color: #f5f5f7;
-                        border-radius: 100%;
-                        padding: 2rem;
-                        height: 4rem;
-                        width: 4rem;
-                        color: gray;
-                        align-items: center;
-                        justify-content: center;
-                    }
+          /* 🔥 Sliding Pagination Effect */
+          .swiper-pagination {
+            bottom: 20px !important;
+          }
 
-                    .swiper-button-next:after {
-                        font-size: 1.5rem;
-                        font-weight: 900;
-                        text-align: center;
-                        margin-left: 6.5px;
-                        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-                        -webkit-text-stroke: 3px gray;
-                        text-stroke: 3px #F44247;
-                    }
+          .swiper-pagination-bullet {
+            width: 20px;
+            height: 20px;
+            background: #bbb;
+            opacity: 1;
+            margin: 0 5px !important;
+            transition: all 0.4s ease;
+          }
 
-                    .swiper-button-prev:after {
-                        font-size: 1.5rem;
-                        font-weight: 900;
-                        text-align: center;
-                        margin-left: -5px;
-                        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-                        -webkit-text-stroke: 3px gray;
-                        text-stroke: 3px #F44247;
-                    }
+          .swiper-pagination-bullet-active {
+            background: #ff2d74;
+            transform: scale(1.6); /* 🔥 zoom effect */
+          }
 
-                    @media (max-width: 800px) {
-                        .swiper-button-next,
-                        .swiper-button-prev {
-                            display:none;
-                            padding: 1rem;
-                            height: 2rem;
-                            width: 2rem;
-                        }
+          /* dynamic bullets extra effect */
+          .swiper-pagination-bullet-active-main {
+            transform: scale(1.8);
+          }
 
-                        .swiper-button-next:after {
-                            font-size: 1rem;
-                            margin-left: 0.3rem;
-                            -webkit-text-stroke: 0.1125rem #F44247;
-                            text-stroke: 0.1125rem #F44247;
-                        }
-
-                        .swiper-button-prev:after {
-                            font-size: 1rem;
-                            margin-left: -0.5rem;
-                            -webkit-text-stroke: 0.1125rem #F44247;
-                            text-stroke: 0.1125rem #F44247;
-                        }
-                    }
-                `}
+          .swiper-pagination-bullet-active-prev,
+          .swiper-pagination-bullet-active-next {
+            transform: scale(1.3);
+          }
+        `}
       </style>
     </>
   );

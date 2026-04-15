@@ -175,7 +175,7 @@ export default function Navbar(props) {
                 />
               </ListItem>
             </Link>
-          )
+          ),
         )}
       </List>
     </Stack>
@@ -333,22 +333,35 @@ export default function Navbar(props) {
                   >
                     {item.name}
                   </Button>
-                )
+                ),
               )}
               <Button
                 href="/cart"
-                variant="contained"
+                variant="outlined"
                 startIcon={
-                  <Badge badgeContent={cartItems.length} color="error">
+                  <Badge
+                    badgeContent={cartItems.length}
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        backgroundColor: "#fff",
+                        color: "#000",
+                      },
+                    }}
+                  >
                     <ShoppingCartOutlinedIcon />
                   </Badge>
                 }
                 sx={{
-                  bgcolor: "#92553D",
                   textTransform: "none",
                   borderRadius: "50px",
                   px: 2.5,
-                  "&:hover": { bgcolor: "#282828" },
+                  background: "#ff2d74",
+                  borderWidth: "2px",
+                  borderColor: "#fff",
+                  color: "#fff",
+                  "&:hover": {
+                    borderColor: "#fff",
+                  },
                 }}
               >
                 Go To Cart

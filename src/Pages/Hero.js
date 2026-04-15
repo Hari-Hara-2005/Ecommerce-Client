@@ -10,8 +10,8 @@ import Faq from '../Component/Faq';
 import Footer from '../Component/Footer';
 import { Link } from 'react-router-dom';
 import MainProductSlide from '../Component/MainProductSlide';
-import { ScrollDownButton } from '../Component/ScrollDownButton';
 import api from '../api';
+import CategorySection from '../Component/CategorySection';
 
 const Hero = () => {
     useEffect(() => {
@@ -34,31 +34,13 @@ const Hero = () => {
     return (
         <Box>
             <StickyWhatsapp link={"https://wa.me/7339534672"} />
-            <Box sx={{}} className="hero_bg">
+            <Box sx={{ background: "#ff2d74" }}>
                 <Navbar />
                 <MainProductSlide />
-                <ScrollDownButton />
             </Box>
-            <Box sx={{ height: ['90vh', '70vh', '70vh', '70vh', '80vh'], bgcolor: '#92553D' }}>
+            <Box>
                 <Navbar color="#fff" />
-                <Box sx={{ display: 'flex', flexDirection: ['column', 'column', 'row'], alignItems: 'center', justifyContent: "space-between", height: ['75%'], px: [2.5, 5, 5, 11] }}>
-                    <Box sx={{ display: 'flex', justifyContent: ['center', 'center', 'normal'], }}>
-                        <Box component='img' src='Images/img-4.png' alt='Cover 2' sx={{ width: ["90%", "80%", "80%", "100%", "42rem"] }} />
-                    </Box>
-                    <Box sx={{ width: ["100%", "100%", "50%"] }}>
-                        <Typography sx={{
-                            fontSize: ['1.5rem', '1.5rem', '2.5rem'],
-                            fontWeight: '600',
-                            color: '#FFF',
-                            py: [2.5, 1],
-                        }}>
-                            Flavour Updated
-                        </Typography>
-                        <Typography sx={{ textAlign: 'justify', fontSize: 20, color: '#fff' }}>
-                            We're thrilled to introduce new flavors to our cashews! Whether you love bold, spicy, or sweet tastes, our updated selection has something for everyone. Each flavor is crafted with care to ensure a satisfying crunch and a burst of deliciousness in every bite. Try them today and elevate your snacking experience!
-                        </Typography>
-                    </Box>
-                </Box>
+                <CategorySection industryData={industryData} />
             </Box>
             <Box sx={{ bgcolor: '#fff' }} className="three" >
                 <Box component='img'
