@@ -15,8 +15,6 @@ import {
   useScrollTrigger,
   Slide,
   CssBaseline,
-  Menu,
-  MenuItem,
   Badge,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -52,10 +50,9 @@ export default function Navbar(props) {
 
   const [isDown, setIsDown] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openDropdown = Boolean(anchorEl);
- 
   const [productMenuItems, setItem] = useState([]);
+
+  // ✅ fetch categories
   const fetchData = async () => {
     try {
       const { data } = await api.get("/api/category");
@@ -81,26 +78,16 @@ export default function Navbar(props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleDropdownClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  // ✅ ONLY Home + Product
+  const navItems = [{ link: "/", name: "Home" }, { name: "Product" }];
 
-  const handleDropdownClose = () => {
-    setAnchorEl(null);
-  };
-
-  const navItems = [
-    { link: "/", name: "Home" },
-    { name: "Product" },
-    { link: "/about", name: "About" },
-    { link: "/contact", name: "Contact Us" },
-  ];
-
+  // ✅ Mobile Drawer (unchanged UI)
   const drawer = (
     <Stack direction="column">
       <Toolbar sx={{ justifyContent: "flex-end", pr: 2 }}>
         <CloseIcon sx={{ color: "#fff" }} onClick={handleDrawerToggle} />
       </Toolbar>
+
       <List sx={{ mt: 10, alignItems: "center", justifyContent: "center" }}>
         {navItems.map((item, index) =>
           item.name === "Product" ? (
@@ -180,9 +167,16 @@ export default function Navbar(props) {
   return (
     <>
       <CssBaseline />
+
       <HideOnScroll {...props}>
         <AppBar
-          sx={{ backgroundColor: "transparent", px: [0, 1, 3], boxShadow: 0 }}
+          sx={{
+            backgroundColor: isDown ? "transparent" : "#ff2d74",
+            px: [0, 1, 3],
+            boxShadow: 0,
+            pt: isDown ? 0 : 8,
+            transition: "all 0.3s ease",
+          }}
         >
           <Toolbar
             sx={{
@@ -217,16 +211,17 @@ export default function Navbar(props) {
                       borderRadius: "100%",
                       p: 1.3,
                     }}
-                    alt="logo"
                   />
                 </ImageListItem>
               </Link>
+
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Button href="/cart" color="inherit">
                   <Badge badgeContent={cartItems.length} color="error">
                     <ShoppingCartOutlinedIcon />
                   </Badge>
                 </Button>
+
                 <IconButton onClick={handleDrawerToggle} color="inherit">
                   <MenuIcon />
                 </IconButton>
@@ -247,18 +242,20 @@ export default function Navbar(props) {
                     borderRadius: "100%",
                     p: 2,
                   }}
-                  alt="logo"
                 />
               </ImageListItem>
             </Link>
 
-            {/* Desktop Menu */}
+            {/* ✅ Desktop Menu (INLINE CATEGORIES) */}
             <Box sx={{ display: { xs: "none", md: "flex" }, gap: "2rem" }}>
               {navItems.map((item, index) =>
                 item.name === "Product" ? (
-                  <Box key={index}>
+                  productMenuItems.map((menuItem, i) => (
                     <Button
-                      onClick={handleDropdownClick}
+                      key={menuItem._id || i}
+                      component={Link}
+                      to={`/category/${menuItem.slug}`}
+                      onClick={ScrollToTop}
                       sx={{
                         fontSize: 17,
                         fontWeight: "600",
@@ -266,54 +263,9 @@ export default function Navbar(props) {
                         textTransform: "none",
                       }}
                     >
-                      {item.name}
+                      {menuItem.category_name}
                     </Button>
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={openDropdown}
-                      onClose={handleDropdownClose}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "center",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "center",
-                      }}
-                      PaperProps={{
-                        sx: {
-                          mt: 1,
-                          borderRadius: "10px",
-                          background: "#fff",
-                          p: 0.5,
-                          fontSize: 17,
-                          fontWeight: "600",
-                          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                          width: "13rem",
-                          border: "3.5px solid #92553D",
-                        },
-                      }}
-                    >
-                      {productMenuItems.map((menuItem, i) => (
-                        <MenuItem
-                          key={menuItem._id || i}
-                          component={Link}
-                          to={`/category/${menuItem.slug}`}
-                          onClick={() => {
-                            handleDropdownClose();
-                            ScrollToTop();
-                          }}
-                          sx={{
-                            fontSize: 18,
-                            fontWeight: "600",
-                            color: "#000",
-                          }}
-                        >
-                          {menuItem.category_name}
-                        </MenuItem>
-                      ))}
-                    </Menu>
-                  </Box>
+                  ))
                 ) : (
                   <Button
                     key={index}
@@ -331,6 +283,8 @@ export default function Navbar(props) {
                   </Button>
                 ),
               )}
+
+              {/* Cart Button (unchanged) */}
               <Button
                 href="/cart"
                 variant="outlined"
@@ -357,6 +311,8 @@ export default function Navbar(props) {
                   color: "#fff",
                   "&:hover": {
                     borderColor: "#fff",
+                    background: "#ff2d74",
+                    borderWidth: "2px",
                   },
                 }}
               >
@@ -369,13 +325,12 @@ export default function Navbar(props) {
 
       <Toolbar />
 
-      {/* Drawer (Mobile) */}
+      {/* Drawer */}
       <Box
         component="nav"
         sx={{
           display: { xs: "block", md: "none" },
           width: { sm: drawerWidth },
-          flexShrink: { sm: 0 },
         }}
       >
         <Drawer
@@ -383,10 +338,8 @@ export default function Navbar(props) {
           open={mobileOpen}
           anchor="right"
           onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
           sx={{
             "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
               width: "100%",
               background:
                 "linear-gradient(180.83deg, #181818 0%, #181818 100%)",

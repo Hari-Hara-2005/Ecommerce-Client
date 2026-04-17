@@ -1,6 +1,5 @@
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-//change
 const CategorySection = ({ industryData }) => {
   return (
     <Box
@@ -9,7 +8,7 @@ const CategorySection = ({ industryData }) => {
         justifyContent: { xs: "normal", lg: "center" },
         gap: 2,
         overflowX: "auto",
-        p: 2,
+        p: 5,
         bgcolor: "#fff",
       }}
     >
@@ -19,7 +18,7 @@ const CategorySection = ({ industryData }) => {
           component={Link}
           to={`/category/${item.slug}`}
           sx={{
-            minWidth: "14%",
+            minWidth: "13%",
             height: { xs: "120px", lg: "240px" },
             borderRadius: "20px",
             overflow: "hidden",

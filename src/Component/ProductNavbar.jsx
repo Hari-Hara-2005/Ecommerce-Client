@@ -9,9 +9,7 @@ const ProductNavbar = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await api.get(
-        "/api/category"
-      );
+      const { data } = await api.get("/api/category");
       setItem(data);
     } catch (error) {
       console.error("Error fetching categories:", error.message);

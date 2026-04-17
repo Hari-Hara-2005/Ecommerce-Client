@@ -16,6 +16,7 @@ import COINS from './coins.json';
 import Footer from "../Component/Footer";
 import CountUp from 'react-countup';
 import StickyWhatsapp from "../Component/StickyWhatsapp";
+import FeaturesSection from "../Component/FeaturesSection";
 export const About = () => {
     const lockRef = useRef(null);
     const truckRef = useRef(null);
@@ -282,67 +283,7 @@ export const About = () => {
                     </Box>
                 </Box>
             </Box>
-            <Box sx={{ px: [2, 5], py: [0, 5] }}>
-                <FeatureContainer>
-                    <Grid container spacing={0} justifyContent="center">
-                        <FeatureItem item xs={6} md={3}>
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <Player
-                                    ref={truckRef}
-                                    trigger="loop"
-                                    size={window.innerWidth < 600 ? 70 : 96}
-                                    icon={TRUCk}
-                                    colors='primary:red,secondary:white'
-                                    onComplete={() => truckRef.current?.playFromBeginning()}
-                                />
-                            </Box>
-                            <Typography>Free Shiping Purchase Upto ₹1000 </Typography>
-                        </FeatureItem>
-                        <FeatureItem item xs={6} md={3}>
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <Player
-                                    ref={lockRef}
-                                    trigger="loop"
-
-                                    size={window.innerWidth < 600 ? 70 : 96}
-                                    icon={LOCK}
-                                    colors='primary:red,secondary:white'
-                                    onComplete={() => lockRef.current?.playFromBeginning()}
-                                />
-                            </Box>
-                            <Typography>Pay On Delivery</Typography>
-                        </FeatureItem>
-                        <FeatureItem item xs={6} md={3}>
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <Player
-                                    ref={qualityRef}
-                                    trigger="loop"
-
-                                    size={window.innerWidth < 600 ? 70 : 96}
-                                    icon={QUALITY}
-                                    colors='primary:red,secondary:white'
-                                    onComplete={() => qualityRef.current?.playFromBeginning()}
-                                />
-                            </Box>
-                            <Typography>100% Quality Guaranteed</Typography>
-                        </FeatureItem>
-                        <FeatureItem item xs={6} md={3}>
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <Player
-                                    ref={coinsRef}
-                                    trigger="loop"
-
-                                    size={window.innerWidth < 600 ? 70 : 96}
-                                    icon={COINS}
-                                    colors='primary:red,secondary:white'
-                                    onComplete={() => coinsRef.current?.playFromBeginning()}
-                                />
-                            </Box>
-                            <Typography>Reward Points On Every Purchase</Typography>
-                        </FeatureItem>
-                    </Grid>
-                </FeatureContainer>
-            </Box>
+            <FeaturesSection />
             <Box sx={{ bgcolor: 'black', mt: 20, px: 2 }}>
                 <Footer />
             </Box>

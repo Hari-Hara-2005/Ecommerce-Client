@@ -37,10 +37,9 @@ const MainProductSlide = () => {
             xs: "200px",
             sm: "300px",
             md: "400px",
-            lg: "800px",
+            lg: "730px",
           },
           overflow: "hidden",
-          mt: "2%",
         }}
       >
         <Swiper

@@ -5,13 +5,19 @@ import Navbar from '../Component/Navbar';
 import StickyWhatsapp from '../Component/StickyWhatsapp';
 import CustomerReview from '../Component/CustomerReview';
 import Title from '../Component/Title';
-import IndustryCarousel from '../Component/ProductSlide';
+import ProductSlide from '../Component/ProductSlide';
 import Faq from '../Component/Faq';
 import Footer from '../Component/Footer';
 import { Link } from 'react-router-dom';
 import MainProductSlide from '../Component/MainProductSlide';
 import api from '../api';
 import CategorySection from '../Component/CategorySection';
+import TopBar from '../Component/Announcement';
+import SlideProduct from '../Component/SlideProducts';
+import NewArrivals from './ProductPages/NewArrivals';
+import Earrings from './ProductPages/Earrings';
+import HairAccessories from './ProductPages/HairAccessories';
+import FeaturesSection from '../Component/FeaturesSection';
 
 const Hero = () => {
     useEffect(() => {
@@ -34,15 +40,15 @@ const Hero = () => {
     return (
         <Box>
             <StickyWhatsapp link={"https://wa.me/7339534672"} />
-            <Box sx={{ background: "#ff2d74" }}>
-                <Navbar />
+            <Box>
+                <TopBar />
+                <Navbar color="#fff" />
                 <MainProductSlide />
             </Box>
             <Box>
-                <Navbar color="#fff" />
                 <CategorySection industryData={industryData} />
             </Box>
-            <Box sx={{ bgcolor: '#fff' }} className="three" >
+            <Box sx={{ bgcolor: '#fff' }} >
                 <Box component='img'
                     src='Images/leaf3.avif'
                     alt='leaf'
@@ -53,76 +59,52 @@ const Hero = () => {
                         position: 'absolute',
                     }}
                 />
-                <Box sx={{ display: 'flex', justifyContent: 'start', color: 'black', px: [2, 5, 8], pb: [5, 12] }}>
-                    <Title color="#282828">Our Products</Title>
+                <Box sx={{ px: { xs: 2, md: 6 } }}>
+                    <Title title="Estailo Exclusive" subtitle="Unique Finds" />
+                    <SlideProduct />
                 </Box>
-                <Box sx={{ mx: [2, 5, 5, 12] }}>
-                    <Grid container spacing={{ xs: 3, sm: 3, md: 5 }} justifyContent={'center'} columns={{ xs: 2, sm: 3, md: 3 }}>
-                        {industryData.map((item, index) => (
-                            <Grid item xs={1} sm={1} md={1} key={index} sx={{
-                                cursor: 'pointer',
-                                transition: 'transform 0.5s ease',
-                                '&:hover': {
-                                    transform: 'scale(1.10)',
-                                }
-                            }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <Link
-                                        to={`/category/${item.slug}`}
-                                        onClick={ScrollToTop}
-                                        color={"inherit"}
-                                        style={{ textDecoration: 'none' }}
-                                        key={index}
-                                    >
-                                        <Box sx={{ width: ["100%", "100%", "100%", "100%", '25rem'] }}>
-                                            <Box
-                                                component='img'
-                                                src={item.category_image}
-                                                alt='pack'
-                                                sx={{
-                                                    width: ["100%"],
-                                                    borderRadius: '3%',
-                                                    height: ['12rem', '18rem', '20rem', '25rem'],
-                                                    border: '3px solid #92553D',
-                                                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-                                                    cursor: 'pointer',
-                                                    mb: [-4.5, -6]
-                                                }}
-                                            />
-                                        </Box>
-                                        <Typography sx={{
-                                            fontSize: ['1.2rem', '1.5rem', '1.5rem'],
-                                            fontWeight: '600',
-                                            color: '#fff',
-                                            textAlign: 'center',
-                                            letterSpacing: 1,
-                                        }}>
-                                            {item.category_name}
-                                        </Typography>
-                                    </Link>
-                                </Box>
-                            </Grid>
-                        ))}
-                    </Grid>
+                <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>
+                    <NewArrivals />
                 </Box>
-                <IndustryCarousel />
+                <Box sx={{ px: { xs: 2, md: 6 }, py: 4 }}>
+                    <Box
+                        sx={{
+                            width: "100%",
+                            borderRadius: 4,
+                            overflow: "hidden",
+                        }}
+                    >
+                        <Box
+                            component="img"
+                            src="Client/src/SMART.jpg"
+                            alt="Free Gift Banner"
+                            sx={{
+                                width: "100%",
+                                height: { xs: 180, sm: 250, md: 320 },
+                                objectFit: "cover",
+                                display: "block",
+                            }}
+                        />
+                    </Box>
+                </Box>
+                <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>
+                    <Earrings />
+                </Box>
+                <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>
+                    <HairAccessories />
+                </Box>
             </Box>
-            <Box sx={{ bgcolor: '#282828', }}>
-                <Box sx={{ display: 'flex', justifyContent: 'start', px: [2, 5, 8], pb: [0, 0, 3], pt: 5 }}>
-                    <Title color="#fff" >Read our customers say</Title>
-                </Box>
+            <FeaturesSection />
+            <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>
+                <Typography variant="h4" fontWeight={700} color={"black"} pt={5}>
+                    Read our customers say
+                </Typography>
                 <CustomerReview />
-            </Box>
-            <Box sx={{ px: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'start', color: 'black', px: [2, 5, 8], pb: 5 }}>
-                    <Title color="#282828">Frequently Asked Question</Title>
-                </Box>
-                <Faq />
             </Box>
             <Box sx={{ bgcolor: 'black', mt: 20, px: 2 }}>
                 <Footer />
             </Box>
-        </Box>
+        </Box >
     );
 }
 

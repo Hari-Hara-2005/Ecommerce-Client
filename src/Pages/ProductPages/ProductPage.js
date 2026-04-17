@@ -17,6 +17,7 @@ import { toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api';
+import TopBar from '../../Component/Announcement';
 const StyledCard = styled(Card)(({ theme }) => ({
   backgroundColor: '#fff',
   color: '#92553D',
@@ -100,7 +101,9 @@ const ProductCard = ({ product, isLoading }) => {
     const newQty = e.target.value;
     setselectedQty(newQty);
   };
-
+  // const discount = Math.round(
+  //   ((original - price) / original) * 100
+  // );
   const handleShoppingClick = (product) => {
     const encodedMessage = encodeURIComponent(`Hi! I'm interested in this product:\n\nName: ${product.name}\nPrice:\n\nPockets: ${selectedQty}\n\nPlease provide more details and help me place an order.`);
     const whatsappNumber = '919952857016';
@@ -136,47 +139,46 @@ const ProductCard = ({ product, isLoading }) => {
         <Skeleton variant="rectangular" animation="wave" width="100%" height={260} />
       ) : (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', ml: [2, 0], mt: [0, 2] }}>
-          <Box sx={{ width: ["7.5rem", "12rem"] }}>
-            <Box component="img" sx={{ width: ['85%', '100%'], }} src={product.image_url} alt={product.name} />
+          <Box
+            sx={{
+              width: ["7.5rem", "12rem"],
+              position: "relative",
+              overflow: "hidden",
+              cursor: "pointer",
+              "&:hover .mainImg": { opacity: 0 },
+              "&:hover .hoverImg": { opacity: 1 }
+            }}
+          >
+            <Box
+              component="img"
+              src={product.image_url}
+              className="mainImg"
+              sx={{
+                width: ['85%', '100%'],
+                top: 0,
+                left: 0,
+                transition: "0.5s",
+                opacity: 1
+              }}
+            />
+
+            <Box
+              component="img"
+              src={product.hover_image || product.image_url}
+              className="hoverImg"
+              sx={{
+                width: ['85%', '100%'],
+                objectFit: "cover",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                transition: "0.5s",
+                opacity: 0
+              }}
+            />
           </Box>
         </Box>
       )}
-      <IconContainer>
-        {isLoading ? (
-          <>
-            <Skeleton variant="circular" animation="wave" width={40} height={40} />
-            <Skeleton variant="circular" animation="wave" width={40} height={40} />
-            <Skeleton variant="circular" animation="wave" width={40} height={40} />
-          </>
-        ) : (
-          <>
-            <IconButton aria-label="add to favorites" sx={{
-              color: liked ? 'red' : '#fff', bgcolor: '#92553D', '&:hover': {
-                bgcolor: '#212121',
-                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-              },
-            }} onClick={handleLikeClick}>
-              <FavoriteIcon sx={{ fontSize: ['0.8rem', '1.5rem'] }} />
-            </IconButton>
-            <IconButton aria-label="share" sx={{
-              color: '#fff', bgcolor: '#92553D', '&:hover': {
-                bgcolor: '#212121',
-                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-              },
-            }} onClick={() => handleShareClick(product)}>
-              <ShareIcon sx={{ fontSize: ['0.8rem', '1.5rem'] }} />
-            </IconButton >
-            <IconButton aria-label="add to cart" sx={{
-              color: '#fff', bgcolor: '#92553D', '&:hover': {
-                bgcolor: '#212121',
-                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-              },
-            }} onClick={() => handleShoppingClick(product)}>
-              <ShoppingCartIcon sx={{ fontSize: ['0.8rem', '1.5rem'] }} />
-            </IconButton>
-          </>
-        )}
-      </IconContainer>
       <CardContent>
         {isLoading ? (
           <>
@@ -187,83 +189,81 @@ const ProductCard = ({ product, isLoading }) => {
           </>
         ) : (
           <>
-            <Typography component="div" sx={{ textAlign: 'start', fontWeight: [700, 600], letterSpacing: 1, fontSize: ['0.8rem', '1.3rem'] }} >
+            <Box sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              bgcolor: "#ff2d74",
+              color: "#fff",
+              px: 1.5,
+              py: 0.5,
+              fontSize: "0.7rem",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}>
+              HOT
+            </Box>
+
+            <Typography component="div" color={'#000'} sx={{ textAlign: 'start', fontWeight: [700, 600], letterSpacing: 1, fontSize: ['0.8rem', '1.3rem'] }} >
               {product.product_name}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'start', py: 1 }}>
-              {product.product_desc}
-            </Typography>
-
-            <Typography variant="body2" component="div" sx={{ textAlign: 'start', letterSpacing: 1, py: 1 }}>
-              <Select
-                value={selectedQty}
-                displayEmpty
-                style={{ height: 40 }}
-                onChange={handleQtyChange}
-                sx={{
-                  fontSize: ['1rem', '1rem'],
-                  minWidth: 100,
-                  letterSpacing: 0.5,
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: '#ccc',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: '#92553D',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#92553D',
-                    },
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#ccc',
-                  },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#92553D !important',
-                  },
-                }}
-              >
-                <MenuItem value="" disabled>
-                  Select weight
-                </MenuItem>
-                {quantities.map((q, i) => (
-                  <MenuItem key={q.i} value={q.multiplier}>
-                    {q.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Typography>
-
-            <Typography color={'#92553D'} sx={{ textAlign: 'start', fontWeight: 600, fontSize: '0.8rem', letterSpacing: 0.5, mt: 1, display: 'flex', }} >
+            <Typography color={'#000'} sx={{ textAlign: 'start', fontWeight: 600, fontSize: '0.8rem', letterSpacing: 0.5, mt: 1, display: 'flex', }} >
               <VerifiedIcon sx={{ fontSize: '1rem' }} />
-              Smart Dry Fruits
+              Kudanthai Trends
             </Typography>
             <Stack direction={["column", 'row']} justifyContent={'space-between'}>
               <Box>
                 <RatingStars rating={product.rating} size="1.2rem" />
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography color={'#282828'} sx={{ textAlign: 'start', fontWeight: 700, fontSize: '1rem', letterSpacing: 0.5, display: 'flex', alignItems: 'center' }} >
-                    ₹{product.product_price * selectedQty}
-                    <LocalOfferOutlinedIcon sx={{ fontSize: '0.9rem' }} />
-                  </Typography><Typography
-                    color="gray"
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+
+
+                  <Typography
                     sx={{
-                      textAlign: 'start',
-                      fontWeight: 600,
+                      fontWeight: 700,
+                      fontSize: '1.1rem',
+                      color: '#000'
+                    }}
+                  >
+                    ₹{product.product_price * selectedQty}
+                  </Typography>
+
+                  {/* ❌ Original Price */}
+                  <Typography
+                    sx={{
+                      color: "#888",
                       fontSize: '0.9rem',
-                      letterSpacing: 0.5,
                       textDecoration: "line-through"
                     }}
                   >
-                    ₹{product.product_price * 0 * 1.2}
+                    ₹{Math.round(product.product_price * 1.5)}
                   </Typography>
+
+                  {/* 🔥 Offer Badge */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.3,
+                      bgcolor: "#e8f5e9",
+                      color: "#ff2d74",
+                      px: 0.8,
+                      py: 0.3,
+                      borderRadius: "6px",
+                      fontSize: "0.75rem",
+                      fontWeight: 600
+                    }}
+                  >
+                    <LocalOfferOutlinedIcon sx={{ fontSize: "0.8rem" }} />
+                    50% OFF
+                  </Box>
+
                 </Box>
               </Box>
               <Box sx={{ display: ['flex'], alignItems: 'center', mt: [1.5, 0] }}>
                 <Box sx={{ mt: [0, 2] }}>
                   <Box sx={{ display: ['flex'], alignItems: 'center', mt: [0, 1.5] }}>
                     <Button variant="contained" startIcon={<ShoppingCartOutlinedIcon />} sx={{
-                      bgcolor: "#92553D", textTransform: 'none', borderRadius: '50px', px: [2.5], '&:hover': {
+                      bgcolor: "#ff2d74", textTransform: 'none', borderRadius: '50px', px: [2.5], '&:hover': {
                         bgcolor: "#282828"
                       }
                     }} onClick={handleAddToCart}>
@@ -308,7 +308,8 @@ const ProductPage = () => {
 
   return (
     <>
-      <Navbar color="#000" />
+      <TopBar />
+      <Navbar color="#fff" />
       <Box component='img'
         src='Images/leaf3.avif'
         alt='leaf'
@@ -320,14 +321,8 @@ const ProductPage = () => {
           position: 'absolute',
         }}
       />
-      <Box sx={{ display: ['block', 'none'] }}>
-        <ProductNavbar />
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'start', color: 'black', px: [2, 5, 4] }}>
-        <Title color="#282828">{categoryName}</Title>
-      </Box>
-      <Box sx={{ display: ['none', 'block'] }}>
-        <ProductNavbar />
+      <Box sx={{ display: 'flex', justifyContent: 'start', color: 'black', px: [2, 5, 4], pt: 8 }}>
+        <Title title={categoryName} />
       </Box>
       <Box sx={{ textAlign: 'center', px: [2, 3, 0], py: [5], zIndex: 30 }}>
         <Grid container spacing={6} justifyContent="center" alignItems="center">
