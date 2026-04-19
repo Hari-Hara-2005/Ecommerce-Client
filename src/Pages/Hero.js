@@ -33,7 +33,7 @@ const Hero = () => {
     }
     return (
         <Box>
-            <StickyWhatsapp link={"https://wa.me/7339534672"} />
+            <StickyWhatsapp link={"https://wa.me/919500597455"} />
             <Box>
                 <TopBar />
                 <Navbar color="#fff" />
@@ -60,11 +60,11 @@ const Hero = () => {
                     >
                         <Box
                             component="img"
-                            src="Client/src/SMART.jpg"
+                            src="/Images/img2.png"
                             alt="Free Gift Banner"
                             sx={{
                                 width: "100%",
-                                height: { xs: 180, sm: 250, md: 320 },
+                                height: { xs: 200, sm: 250, md: 500 },
                                 objectFit: "cover",
                                 display: "block",
                             }}

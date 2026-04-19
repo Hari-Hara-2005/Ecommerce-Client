@@ -14,7 +14,7 @@ function StickyWhatsapp({ link }) {
     }
   };
   window.addEventListener("scroll", changeNavStyle);
-  // https://wa.me/5591122334455
+  // https://wa.me/919500597455
   return (
     <>
       <Link
