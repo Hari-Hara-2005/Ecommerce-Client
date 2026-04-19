@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     Grid, Box, Button, Typography, TextField, Chip,
-    Stack, Divider, Paper, IconButton,
-    Dialog, DialogContent, DialogTitle,
-    InputAdornment, Stepper, Step, StepLabel,
-    Fade, Slide, Avatar, Backdrop
+    Stack, Divider, Paper, IconButton, DialogContent,
+    InputAdornment,
+    Fade, Slide,
+    Dialog
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -19,7 +19,6 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CloseIcon from '@mui/icons-material/Close';
-import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import Footer from '../Component/Footer';
 import { removeFromCart, clearCart, updateQuantity } from '../redux/cartSlice';
@@ -27,9 +26,12 @@ import Navbar from '../Component/Navbar';
 import Title from '../Component/Title.jsx';
 import TopBar from '../Component/Announcement.jsx';
 
-const PROMO_CODES = { WELCOME10: 0.10, SAVE20: 0.20 };
-const FREE_SHIPPING_THRESHOLD = 999;
+// ── SEO import ────────────────────────────────────────────────────────────────
+import { Helmet } from 'react-helmet-async';
+
+const FREE_SHIPPING_THRESHOLD = 500;
 const SHIPPING_COST = 50;
+const MIN_ORDER_AMOUNT = 100;
 
 const pink = '#E91E8C';
 const pinkLight = '#FCE4F3';
@@ -38,6 +40,71 @@ const brown = '#92553D';
 const brownLight = '#fdf5f2';
 const dark = '#1a1a1a';
 const surface = '#FAFAFA';
+
+// ─── Cart SEO ─────────────────────────────────────────────────────────────────
+const CartSEO = () => (
+    <Helmet>
+        {/* Title */}
+        <title>My Cart | Kudanthai Trends – Women's Jewellery & Fashion, Kumbakonam</title>
+
+        {/* Core meta */}
+        <meta
+            name="description"
+            content="Review your selected jewellery and fashion accessories in your Kudanthai Trends cart. Place your order via WhatsApp for fast delivery across Tamil Nadu."
+        />
+        <meta
+            name="keywords"
+            content="Kudanthai Trends cart, buy jewellery online Tamil Nadu, order earrings online, fashion accessories checkout, Kumbakonam jewellery order"
+        />
+        {/* Cart pages should not be indexed by Google */}
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://kudanthaitrends.in/cart" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Kudanthai Trends" />
+        <meta property="og:title" content="My Cart | Kudanthai Trends" />
+        <meta
+            property="og:description"
+            content="You're one step away! Complete your order at Kudanthai Trends and get trendy jewellery delivered to your door."
+        />
+        <meta property="og:url" content="https://kudanthaitrends.in/cart" />
+        <meta property="og:image" content="https://kudanthaitrends.in/Images/KT1.png" />
+        <meta property="og:locale" content="en_IN" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="My Cart | Kudanthai Trends" />
+        <meta
+            name="twitter:description"
+            content="Complete your jewellery order at Kudanthai Trends – Kumbakonam. Fast WhatsApp ordering, delivery across Tamil Nadu."
+        />
+        <meta name="twitter:image" content="https://kudanthaitrends.in/Images/KT1.png" />
+
+        {/* JSON-LD – Checkout page structured data */}
+        <script type="application/ld+json">
+            {JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'CheckoutPage',
+                name: 'Shopping Cart – Kudanthai Trends',
+                url: 'https://kudanthaitrends.in/cart',
+                provider: {
+                    '@type': 'OnlineStore',
+                    name: 'Kudanthai Trends',
+                    url: 'https://kudanthaitrends.in',
+                    telephone: '+919500597455',
+                    email: 'kudanthaitrends@gmail.com',
+                    address: {
+                        '@type': 'PostalAddress',
+                        addressLocality: 'Kumbakonam',
+                        addressRegion: 'Tamil Nadu',
+                        addressCountry: 'IN',
+                    },
+                },
+            })}
+        </script>
+    </Helmet>
+);
 
 // ─── Glassmorphism Dialog ───────────────────────────────────────────────────
 const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
@@ -271,10 +338,6 @@ const Cart = () => {
     const cartItems = useSelector((state) => state.cart.items);
     const dispatch = useDispatch();
 
-    const [promoInput, setPromoInput] = useState('');
-    const [appliedPromo, setAppliedPromo] = useState(null);
-    const [promoError, setPromoError] = useState('');
-    const [promoSuccess, setPromoSuccess] = useState('');
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleRemoveFromCart = (id) => dispatch(removeFromCart(id));
@@ -288,23 +351,6 @@ const Cart = () => {
 
     const handleClearCart = () => {
         dispatch(clearCart());
-        setAppliedPromo(null);
-        setPromoInput('');
-        setPromoError('');
-        setPromoSuccess('');
-    };
-
-    const applyPromo = () => {
-        const code = promoInput.trim().toUpperCase();
-        if (PROMO_CODES[code]) {
-            setAppliedPromo({ code, rate: PROMO_CODES[code] });
-            setPromoError('');
-            setPromoSuccess(`🎉 "${code}" applied — ${PROMO_CODES[code] * 100}% off!`);
-        } else {
-            setPromoError('Invalid code. Try WELCOME10 or SAVE20.');
-            setAppliedPromo(null);
-            setPromoSuccess('');
-        }
     };
 
     const handleShoppingClick = (form) => {
@@ -325,7 +371,7 @@ const Cart = () => {
             `Please confirm my order. Thank you!`;
 
         const encodedMessage = encodeURIComponent(fullMessage);
-        const whatsappNumber = '919952857016';
+        const whatsappNumber = '919500597455';
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const url = isMobile
             ? `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
@@ -335,35 +381,18 @@ const Cart = () => {
         setDialogOpen(false);
     };
 
-
-    // const handleShoppingClick = () => {
-    //     const message = cartItems.map(item =>
-    //         `Name: ${item.name}\nPrice: ₹${item.price}\nQty: ${item.quantity || item.qty || 1}${item.selectedGram ? `\nGrams: ${item.selectedGram}` : ''}`
-    //     ).join('\n\n');
-
-    //     const encodedMessage = encodeURIComponent(
-    //         `Hi! I'm interested in these products:\n\n${message}\n\nTotal: ₹${total}\n\nPlease help me place an order.`
-    //     );
-
-    //     const whatsappNumber = '919952857016';
-    //     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    //     const whatsappUrl = isMobile
-    //         ? `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
-    //         : `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
-
-    //     window.open(whatsappUrl, '_blank');
-    // };
-
-
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || item.qty || 1)), 0);
     const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-    const discount = appliedPromo ? Math.round(subtotal * appliedPromo.rate) : 0;
-    const total = subtotal + shipping - discount;
+    const total = subtotal + shipping;
     const toFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
+
+    const isOrderEnabled = subtotal >= MIN_ORDER_AMOUNT;
 
     return (
         <>
+            {/* ── Cart SEO ── */}
+            <CartSEO />
+
             <TopBar />
             <Navbar color="#fff" />
 
@@ -398,7 +427,6 @@ const Cart = () => {
                     </Box>
 
                     {cartItems.length === 0 ? (
-                        /* ── Empty State ── */
                         <Box sx={{
                             textAlign: 'center', py: 10, px: 4,
                             borderRadius: '24px',
@@ -425,7 +453,7 @@ const Cart = () => {
                             {/* ── Cart Items ── */}
                             <Grid item xs={12} md={8}>
                                 <Stack spacing={2}>
-                                    {cartItems.map((item, index) => {
+                                    {cartItems.map((item) => {
                                         const qty = item.quantity || item.qty || 1;
                                         const originalPrice = item.originalPrice || item.mrp || null;
                                         const discountPct = originalPrice ? Math.round((1 - item.price / originalPrice) * 100) : null;
@@ -444,8 +472,6 @@ const Cart = () => {
                                                     }
                                                 }}>
                                                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-
-                                                    {/* Image */}
                                                     <Box sx={{ position: 'relative', flexShrink: 0 }}>
                                                         <Box component="img"
                                                             src={item.image || item.img || item.imageUrl}
@@ -457,14 +483,13 @@ const Cart = () => {
                                                             <Chip label={`${discountPct}%`} size="small"
                                                                 sx={{
                                                                     position: 'absolute', top: -8, right: -8,
-                                                                    bgcolor: '#00C853', color: '#fff',
+                                                                    bgcolor: '#ff2d74', color: '#fff',
                                                                     fontWeight: 800, fontSize: 10, height: 20,
                                                                     '& .MuiChip-label': { px: 0.8 }
                                                                 }} />
                                                         )}
                                                     </Box>
 
-                                                    {/* Info */}
                                                     <Box sx={{ flex: 1, minWidth: 0 }}>
                                                         <Typography fontWeight={700} fontSize={15} color={dark} noWrap>
                                                             {item.name}
@@ -473,7 +498,6 @@ const Cart = () => {
                                                             <Chip label={`${item.selectedGram}g`} size="small"
                                                                 sx={{ mt: 0.4, height: 20, fontSize: 11, bgcolor: '#f5f5f5', color: '#666', '& .MuiChip-label': { px: 1 } }} />
                                                         )}
-
                                                         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mt: 0.8 }}>
                                                             <Typography fontWeight={600} color={"#ff2d74"} fontSize={17}>
                                                                 ₹{item.price}
@@ -484,8 +508,6 @@ const Cart = () => {
                                                                 </Typography>
                                                             )}
                                                         </Box>
-
-                                                        {/* Qty controls + line total */}
                                                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1.5 }}>
                                                             <Box sx={{
                                                                 display: 'flex', alignItems: 'center',
@@ -510,7 +532,6 @@ const Cart = () => {
                                                         </Box>
                                                     </Box>
 
-                                                    {/* Remove */}
                                                     <IconButton onClick={() => handleRemoveFromCart(item.id)}
                                                         sx={{
                                                             color: '#ccc', alignSelf: 'flex-start',
@@ -554,22 +575,8 @@ const Cart = () => {
                                                 {shipping === 0 ? '✓ FREE' : `₹${shipping}`}
                                             </Typography>
                                         </Box>
-                                        {appliedPromo && (
-                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Box>
-                                                    <Typography variant="body2" color="text.secondary">Promo</Typography>
-                                                    <Chip label={appliedPromo.code} size="small"
-                                                        onDelete={() => { setAppliedPromo(null); setPromoSuccess(''); setPromoInput(''); }}
-                                                        sx={{ height: 18, fontSize: 10, bgcolor: pinkLight, color: pink, '& .MuiChip-label': { px: 0.8 } }} />
-                                                </Box>
-                                                <Typography variant="body2" fontWeight={700} color="#00C853">
-                                                    -₹{discount}.00
-                                                </Typography>
-                                            </Box>
-                                        )}
                                     </Stack>
 
-                                    {/* Free shipping nudge */}
                                     {toFreeShipping > 0 && subtotal > 0 && (
                                         <Box sx={{ mt: 2, p: 1.5, borderRadius: '12px', bgcolor: pinkLight, border: `1px solid rgba(233,30,140,0.15)` }}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -606,21 +613,35 @@ const Cart = () => {
                                     <Button fullWidth variant="contained" size="large"
                                         endIcon={<ShoppingCartCheckoutIcon />}
                                         onClick={() => setDialogOpen(true)}
+                                        disabled={!isOrderEnabled}
                                         sx={{
-                                            background: `linear-gradient(135deg, ${pinkDark}, ${pink})`,
+                                            background: isOrderEnabled
+                                                ? `linear-gradient(135deg, ${pinkDark}, ${pink})`
+                                                : undefined,
                                             borderRadius: '14px', py: 1.7,
                                             fontWeight: 800, fontSize: 15, textTransform: 'none',
-                                            boxShadow: `0 8px 24px rgba(233,30,140,0.3)`,
+                                            boxShadow: isOrderEnabled ? `0 8px 24px rgba(233,30,140,0.3)` : 'none',
                                             letterSpacing: 0.3,
                                             transition: 'all 0.3s',
                                             '&:hover': {
                                                 background: `linear-gradient(135deg, #880e4f, ${pinkDark})`,
                                                 boxShadow: `0 12px 32px rgba(233,30,140,0.45)`,
                                                 transform: 'translateY(-2px)'
+                                            },
+                                            '&.Mui-disabled': {
+                                                background: '#e0e0e0',
+                                                color: '#aaa',
+                                                boxShadow: 'none',
                                             }
                                         }}>
                                         Place Order
                                     </Button>
+
+                                    {!isOrderEnabled && subtotal > 0 && (
+                                        <Typography variant="caption" color="error" display="block" textAlign="center" mt={1}>
+                                            Minimum order amount is ₹{MIN_ORDER_AMOUNT}. Add ₹{MIN_ORDER_AMOUNT - subtotal} more to proceed.
+                                        </Typography>
+                                    )}
 
                                     <Button fullWidth variant="text" href="/"
                                         sx={{
@@ -638,7 +659,6 @@ const Cart = () => {
                 </Box>
             </Box>
 
-            {/* ── Order Dialog ── */}
             <OrderDialog
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}

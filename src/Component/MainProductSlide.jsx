@@ -1,32 +1,50 @@
 import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay, Pagination } from "swiper/modules";
+import { Link } from "react-router-dom";
 
-// Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-// Swiper modules
-import { Navigation, Autoplay, Pagination } from "swiper/modules";
-
-import api from "../api";
+import api from "../utils/api";
 
 const MainProductSlide = () => {
   const [banners, setBanner] = useState([]);
+  const [isMobile, setIsMobile] = useState(
+    window.matchMedia("(max-width: 768px)").matches,
+  );
 
-  const fetchData = async () => {
-    try {
-      const response = await api.get("/api/banner");
-      setBanner(response.data);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
+  // ✅ Detect mobile/desktop on resize
   useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px)");
+    const handleResize = () => setIsMobile(media.matches);
+    media.addEventListener("change", handleResize);
+    return () => media.removeEventListener("change", handleResize);
+  }, []);
+
+  // ✅ Fetch banners
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/api/banner");
+        setBanner(response.data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
     fetchData();
   }, []);
+
+  // ✅ Normalize boolean — handles: true, "t", false, "f"
+  const isTrue = (val) => val === true || val === "t";
+
+  // ✅ is_active = "t"  → mobile banners
+  // ✅ is_active = "f"  → desktop banners
+  const filteredBanners = banners.filter((b) =>
+    isMobile ? isTrue(b.is_active) : !isTrue(b.is_active),
+  );
 
   return (
     <>
@@ -34,10 +52,11 @@ const MainProductSlide = () => {
         sx={{
           width: "100%",
           height: {
-            xs: "200px",
-            sm: "300px",
+            xs: "500px",
+            sm: "400px",
             md: "400px",
-            lg: "730px",
+            lg: "650px",
+            xl: "730px",
           },
           overflow: "hidden",
         }}
@@ -47,32 +66,72 @@ const MainProductSlide = () => {
           spaceBetween={0}
           modules={[Navigation, Autoplay, Pagination]}
           autoplay={{ delay: 2500, disableOnInteraction: false }}
-          loop={true}
+          loop={filteredBanners.length > 1}
           navigation={true}
           pagination={{
             clickable: true,
-            dynamicBullets: true, // 🔥 sliding feel
+            dynamicBullets: true,
           }}
-          className="mySwiper"
         >
-          {banners.map((banner) => (
-            <SwiperSlide key={banner.id}>
-              <Box sx={{ width: "100%", height: "100%" }}>
-                <img
-                  src={banner.image_url}
-                  alt="Banner"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </Box>
-            </SwiperSlide>
-          ))}
+          {filteredBanners.map((banner) => {
+            const isExternal = banner.link?.startsWith("http");
+
+            return (
+              <SwiperSlide key={banner.id}>
+                <Box sx={{ width: "100%", height: "100%" }}>
+                  {/* 🔗 INTERNAL LINK */}
+                  {!isExternal ? (
+                    <Link
+                      to={`category/${banner.link || ""}`}
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      <img
+                        src={banner.image_url}
+                        alt="Banner"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </Link>
+                  ) : (
+                    /* 🔗 EXTERNAL LINK */
+                    <a
+                      href={banner.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      <img
+                        src={banner.image_url}
+                        alt="Banner"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </a>
+                  )}
+                </Box>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </Box>
 
+      {/* 🎨 STYLES */}
       <style>
         {`
           .swiper {
@@ -86,7 +145,6 @@ const MainProductSlide = () => {
             align-items: center;
           }
 
-          /* 🔥 Navigation Arrows */
           .swiper-button-next,
           .swiper-button-prev {
             color: #000;
@@ -102,7 +160,6 @@ const MainProductSlide = () => {
             font-weight: bold;
           }
 
-          /* 🔥 Sliding Pagination Effect */
           .swiper-pagination {
             bottom: 20px !important;
           }
@@ -118,10 +175,9 @@ const MainProductSlide = () => {
 
           .swiper-pagination-bullet-active {
             background: #ff2d74;
-            transform: scale(1.6); /* 🔥 zoom effect */
+            transform: scale(1.6);
           }
 
-          /* dynamic bullets extra effect */
           .swiper-pagination-bullet-active-main {
             transform: scale(1.8);
           }

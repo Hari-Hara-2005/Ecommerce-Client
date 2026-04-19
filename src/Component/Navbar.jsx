@@ -16,15 +16,14 @@ import {
   Slide,
   CssBaseline,
   Badge,
+  Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import CusAccordion from "./CusAccordion";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import api from "../api";
-
+import api from "../utils/api";
 const drawerWidth = 240;
 
 function HideOnScroll(props) {
@@ -52,7 +51,6 @@ export default function Navbar(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productMenuItems, setItem] = useState([]);
 
-  // ✅ fetch categories
   const fetchData = async () => {
     try {
       const { data } = await api.get("/api/category");
@@ -75,93 +73,175 @@ export default function Navbar(props) {
   }, []);
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    setMobileOpen((prev) => !prev);
   };
 
-  // ✅ ONLY Home + Product
   const navItems = [{ link: "/", name: "Home" }, { name: "Product" }];
 
-  // ✅ Mobile Drawer (unchanged UI)
+  // ─── Mobile Drawer ─────────────────────────────────────────────────────────
   const drawer = (
-    <Stack direction="column">
-      <Toolbar sx={{ justifyContent: "flex-end", pr: 2 }}>
-        <CloseIcon sx={{ color: "#fff" }} onClick={handleDrawerToggle} />
-      </Toolbar>
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      {/* Drawer Header */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 3,
+          py: 2,
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        <Link to="/" onClick={handleDrawerToggle}>
+          <Box
+            component="img"
+            src="/Images/KT1.png"
+            alt="Logo"
+            sx={{
+              width: "3.2rem",
+              height: "3.2rem",
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
+          />
+        </Link>
 
-      <List sx={{ mt: 10, alignItems: "center", justifyContent: "center" }}>
-        {navItems.map((item, index) =>
-          item.name === "Product" ? (
-            <Box key={index} sx={{ width: "60%", ml: 4 }}>
-              <CusAccordion
-                head={
+        <IconButton
+          onClick={handleDrawerToggle}
+          sx={{
+            color: "#fff",
+            bgcolor: "rgba(255,255,255,0.1)",
+            borderRadius: "50%",
+            "&:hover": { bgcolor: "rgba(255,255,255,0.2)" },
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
+
+      {/* Nav Links */}
+      <List sx={{ px: 2, pt: 2, flex: 1, overflowY: "auto" }}>
+        {/* Home */}
+        <Link
+          to="/"
+          style={{ textDecoration: "none" }}
+          onClick={() => {
+            handleDrawerToggle();
+            ScrollToTop();
+          }}
+        >
+          <ListItem
+            sx={{
+              borderRadius: "10px",
+              mb: 0.5,
+              transition: "all 0.2s",
+              "&:hover": { bgcolor: "rgba(255,45,116,0.12)" },
+            }}
+          >
+            <ListItemText
+              disableTypography
+              primary={
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    color: "#fff",
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  Home
+                </Typography>
+              }
+            />
+          </ListItem>
+        </Link>
+
+        {/* Products section label */}
+        <Typography
+          sx={{
+            fontWeight: 700,
+            fontSize: "0.7rem",
+            color: "#ff2d74",
+            letterSpacing: 2,
+            textTransform: "uppercase",
+            px: 2,
+            pt: 2,
+            pb: 1,
+          }}
+        >
+          Products
+        </Typography>
+
+        {/* All categories listed flat — no accordion */}
+        {productMenuItems.map((menuItem, index) => (
+          <Link
+            to={`/category/${menuItem.slug}`}
+            key={menuItem._id || index}
+            style={{ textDecoration: "none" }}
+            onClick={() => {
+              handleDrawerToggle();
+              ScrollToTop();
+            }}
+          >
+            <ListItem
+              sx={{
+                borderRadius: "10px",
+                mb: 0.5,
+                transition: "all 0.2s",
+                "&:hover": {
+                  bgcolor: "rgba(255,45,116,0.12)",
+                  pl: 3,
+                },
+              }}
+            >
+              <ListItemText
+                disableTypography
+                primary={
                   <Typography
                     sx={{
-                      fontWeight: "bold",
-                      fontSize: "1.3rem",
-                      textAlign: "center",
-                      color: "#fff",
+                      fontSize: "1rem",
+                      fontWeight: 500,
+                      color: "rgba(255,255,255,0.85)",
+                      letterSpacing: 0.4,
                     }}
                   >
-                    {item.name}
+                    {menuItem.category_name}
                   </Typography>
                 }
-                body={
-                  <>
-                    {productMenuItems.map((menuItem, menuIndex) => (
-                      <Link
-                        to={`/category/${menuItem.slug}`}
-                        key={menuItem._id || menuIndex}
-                        onClick={() => {
-                          handleDrawerToggle();
-                          ScrollToTop();
-                        }}
-                        style={{ textDecoration: "none" }}
-                      >
-                        <Typography
-                          sx={{
-                            fontSize: "1rem",
-                            letterSpacing: 1,
-                            py: 1,
-                            color: "white",
-                          }}
-                        >
-                          {menuItem.category_name}
-                        </Typography>
-                      </Link>
-                    ))}
-                  </>
-                }
               />
-            </Box>
-          ) : (
-            <Link
-              to={item.link}
-              key={index}
-              style={{ textDecoration: "none" }}
-              onClick={handleDrawerToggle}
-            >
-              <ListItem button sx={{ color: "#fff" }}>
-                <ListItemText
-                  disableTypography
-                  primary={
-                    <Typography
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: "1.3rem",
-                        textAlign: "center",
-                        color: "#fff",
-                      }}
-                    >
-                      {item.name}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            </Link>
-          ),
-        )}
+            </ListItem>
+          </Link>
+        ))}
       </List>
-    </Stack>
+
+      {/* Drawer Footer — Cart CTA */}
+      <Box sx={{ px: 3, pb: 4 }}>
+        <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 3 }} />
+        <Button
+          href="/cart"
+          fullWidth
+          variant="contained"
+          startIcon={
+            <Badge badgeContent={cartItems.length} color="error">
+              <ShoppingCartOutlinedIcon />
+            </Badge>
+          }
+          sx={{
+            bgcolor: "#ff2d74",
+            color: "#fff",
+            borderRadius: "12px",
+            py: 1.4,
+            fontWeight: 700,
+            fontSize: "1rem",
+            textTransform: "none",
+            boxShadow: "0 4px 20px rgba(255,45,116,0.4)",
+            "&:hover": { bgcolor: "#d4235f" },
+          }}
+        >
+          Go To Cart ({cartItems.length})
+        </Button>
+      </Box>
+    </Box>
   );
 
   return (
@@ -191,54 +271,68 @@ export default function Navbar(props) {
               justifyContent: "space-between",
             }}
           >
-            {/* Mobile View */}
+            {/* ── Mobile View ─────────────────────────────────────────────── */}
             <Stack
               direction="row"
               sx={{
                 display: ["flex", "flex", "none"],
                 width: "100%",
+                alignItems: "center",
                 justifyContent: "space-between",
               }}
             >
-              <Link to="/">
-                <ImageListItem>
-                  <Box
-                    component="img"
-                    src="Images/logo.png"
-                    sx={{
-                      width: "4rem",
-                      height: "4rem",
-                      borderRadius: "100%",
-                      p: 1.3,
-                    }}
-                  />
-                </ImageListItem>
+              <Link to="/" onClick={ScrollToTop}>
+                <Box
+                  component="img"
+                  src="/Images/KT1.png"
+                  alt="Logo"
+                  sx={{
+                    width: "3.5rem",
+                    height: "3.5rem",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    p: 0.5,
+                  }}
+                />
               </Link>
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Button href="/cart" color="inherit">
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <IconButton
+                  component="a"
+                  href="/cart"
+                  sx={{
+                    color: isDown ? "#000" : "#fff",
+                    transition: "color 0.3s",
+                  }}
+                >
                   <Badge badgeContent={cartItems.length} color="error">
                     <ShoppingCartOutlinedIcon />
                   </Badge>
-                </Button>
+                </IconButton>
 
-                <IconButton onClick={handleDrawerToggle} color="inherit">
+                <IconButton
+                  onClick={handleDrawerToggle}
+                  sx={{
+                    color: isDown ? "#000" : "#fff",
+                    transition: "color 0.3s",
+                  }}
+                >
                   <MenuIcon />
                 </IconButton>
               </Box>
             </Stack>
 
-            {/* Desktop Logo */}
+            {/* ── Desktop Logo ─────────────────────────────────────────────── */}
             <Link to="/" style={{ textDecoration: "none" }}>
               <ImageListItem
                 sx={{ my: -5, display: { xs: "none", md: "block" } }}
               >
                 <Box
                   component="img"
-                  src="Images/logo.png"
+                  src="/Images/KT1.png"
                   sx={{
-                    width: "5rem",
-                    height: "5rem",
+                    width: "6rem",
+                    height: "6rem",
                     borderRadius: "100%",
                     p: 2,
                   }}
@@ -246,7 +340,7 @@ export default function Navbar(props) {
               </ImageListItem>
             </Link>
 
-            {/* ✅ Desktop Menu (INLINE CATEGORIES) */}
+            {/* ── Desktop Menu ─────────────────────────────────────────────── */}
             <Box sx={{ display: { xs: "none", md: "flex" }, gap: "2rem" }}>
               {navItems.map((item, index) =>
                 item.name === "Product" ? (
@@ -284,7 +378,6 @@ export default function Navbar(props) {
                 ),
               )}
 
-              {/* Cart Button (unchanged) */}
               <Button
                 href="/cart"
                 variant="outlined"
@@ -325,7 +418,7 @@ export default function Navbar(props) {
 
       <Toolbar />
 
-      {/* Drawer */}
+      {/* ── Mobile Drawer ─────────────────────────────────────────────────── */}
       <Box
         component="nav"
         sx={{
@@ -338,11 +431,13 @@ export default function Navbar(props) {
           open={mobileOpen}
           anchor="right"
           onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
           sx={{
             "& .MuiDrawer-paper": {
               width: "100%",
-              background:
-                "linear-gradient(180.83deg, #181818 0%, #181818 100%)",
+              background: "linear-gradient(160deg, #1a1a1a 0%, #0f0f0f 100%)",
+              boxShadow: "none",
+              pt: 6,
             },
           }}
         >

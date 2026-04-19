@@ -80,7 +80,7 @@ const FeaturesSection = () => {
                 }
               />
             </Box>
-            <Typography mt={1}>Free Shipping Purchase Upto ₹1000</Typography>
+            <Typography mt={1}>Free Shipping Purchase Upto ₹499</Typography>
           </FeatureItem>
 
           {/* 2 */}
@@ -99,7 +99,7 @@ const FeaturesSection = () => {
                 }
               />
             </Box>
-            <Typography mt={1}>Pay On Delivery</Typography>
+            <Typography mt={1}>Pay On Online</Typography>
           </FeatureItem>
 
           {/* 3 */}

@@ -32,7 +32,7 @@ const CustomerReview = () => {
             width: "100%",
             overflow: "hidden",
             maskImage:
-                "linear-gradient(to right, hsl(0 0% 0% / 0), hsl(0 0% 0% / 1) 10%, hsl(0 0% 0% / 1) 90%, hsl(0 0% 0% / 0))",
+                "linear-gradient(to right, hsl(330 70% 30% / 0),  hsl(330 90% 55% / 1) 10%, hsl(330 90% 55% / 1) 90%,  hsl(330 70% 30% / 0))",
         }}>
             <Box sx={{
                 display: "flex",
@@ -45,7 +45,6 @@ const CustomerReview = () => {
                 animation: `${scrollX} 250s linear infinite`,
             }}>
                 {duplicateClients.map((review, index) => {
-                    // Rotate through color styles for each review
                     const colorStyle = colorStyles[index % colorStyles.length];
                     return (
                         <Box key={index} sx={{ position: 'relative', my: [5, 5, 8] }}>
@@ -54,7 +53,20 @@ const CustomerReview = () => {
                                 alt={review.name}
                                 sx={{ width: 100, height: 100, mx: 'auto', mb: -5, zIndex: 1 }}
                             />
-                            <Card sx={{ maxWidth: [300, 350], mx: 'auto', textAlign: 'center', p: 2, borderRadius: '10px', bgcolor: '#f9f9f9', pt: 7 }}>
+                            <Card sx={{
+                                maxWidth: [300, 350],
+                                mx: 'auto',
+                                textAlign: 'center',
+                                p: 2,
+                                borderRadius: '10px',
+                                bgcolor: '#f9f9f9',
+                                pt: 7,
+                                boxShadow: '0 8px 32px rgba(233, 30, 140, 0.28)',
+                                transition: 'box-shadow 0.3s ease',
+                                '&:hover': {
+                                    boxShadow: '0 8px 32px rgba(233, 30, 140, 0.28)',
+                                },
+                            }}>
                                 <CardContent>
                                     <Typography variant="h6" component="div">
                                         {review.name}

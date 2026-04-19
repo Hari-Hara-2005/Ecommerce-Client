@@ -1,16 +1,13 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { animateHero } from '../gsapAnimations';
 import Navbar from '../Component/Navbar';
 import StickyWhatsapp from '../Component/StickyWhatsapp';
 import CustomerReview from '../Component/CustomerReview';
 import Title from '../Component/Title';
-import ProductSlide from '../Component/ProductSlide';
-import Faq from '../Component/Faq';
 import Footer from '../Component/Footer';
-import { Link } from 'react-router-dom';
 import MainProductSlide from '../Component/MainProductSlide';
-import api from '../api';
+import api from '../utils/api';
 import CategorySection from '../Component/CategorySection';
 import TopBar from '../Component/Announcement';
 import SlideProduct from '../Component/SlideProducts';
@@ -34,9 +31,6 @@ const Hero = () => {
             console.log(error.message);
         }
     }
-    const ScrollToTop = () => {
-        window.scrollTo(0, 0)
-    }
     return (
         <Box>
             <StickyWhatsapp link={"https://wa.me/7339534672"} />
@@ -49,18 +43,8 @@ const Hero = () => {
                 <CategorySection industryData={industryData} />
             </Box>
             <Box sx={{ bgcolor: '#fff' }} >
-                <Box component='img'
-                    src='Images/leaf3.avif'
-                    alt='leaf'
-                    sx={{
-                        width: ["70%", "50%", "30%"],
-                        ml: [-10],
-                        mt: [54, 20, 0, -5, -5],
-                        position: 'absolute',
-                    }}
-                />
                 <Box sx={{ px: { xs: 2, md: 6 } }}>
-                    <Title title="Estailo Exclusive" subtitle="Unique Finds" />
+                    <Title title="Estailo Exclusive" subtitle="Rare Finds" />
                     <SlideProduct />
                 </Box>
                 <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>
@@ -96,7 +80,7 @@ const Hero = () => {
             </Box>
             <FeaturesSection />
             <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>
-                <Typography variant="h4" fontWeight={700} color={"black"} pt={5}>
+                <Typography variant="h4" sx={{ fontSize: ["25px", "20px", "35px"] }} fontWeight={700} color={"black"} pt={5}>
                     Read our customers say
                 </Typography>
                 <CustomerReview />
