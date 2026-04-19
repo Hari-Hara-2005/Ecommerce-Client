@@ -9,23 +9,19 @@ export default function TopBar() {
   const [index, setIndex] = useState(0);
 
   // ✅ FETCH FROM topbar TABLE
-  const fetchTopbar = async () => {
-    try {
-      const res = await api.get("/api/topbar");
-
-      // convert DB data → array of text
-      const texts = res.data.map((item) => item.bar_text);
-
-      setMessages(texts);
-      console.log(messages);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
   useEffect(() => {
+    const fetchTopbar = async () => {
+      try {
+        const res = await api.get("/api/topbar");
+        const texts = res.data.map((item) => item.bar_text);
+        setMessages(texts);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
     fetchTopbar();
-  }, [fetchTopbar]);
+  }, []);
 
   // ✅ PREVIOUS
   const prevMsg = () => {

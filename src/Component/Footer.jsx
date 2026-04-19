@@ -745,6 +745,7 @@ function Footer() {
             <a
               href="https://deltainfo-eight.vercel.app/"
               target="_blank"
+              rel="noopener noreferrer"
               style={{ color: "white", textDecoration: "none" }}
             >
               Delta Info
