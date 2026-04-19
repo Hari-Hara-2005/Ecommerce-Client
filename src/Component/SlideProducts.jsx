@@ -241,6 +241,8 @@ const ProductCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
       sx={{
         minWidth: { xs: 250, sm: 230, md: 280 },
         maxWidth: { xs: 195, sm: 230, md: 250 },
+        flexShrink: 0,         // ← added: prevent squishing in flex row
+        scrollSnapAlign: "start", // ← added: snap per card on mobile swipe
         borderRadius: "18px",
         overflow: "hidden",
         bgcolor: "#fff",
@@ -424,7 +426,6 @@ const ProductCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
-
             minHeight: "1.8em",
           }}
         >
@@ -565,6 +566,9 @@ const ProductCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
 const SkeletonCard = ({ index }) => (
   <Box
     sx={{
+      flexShrink: 0,            // ← added
+      scrollSnapAlign: "start", // ← added
+      minWidth: { xs: 250, sm: "unset" }, // ← added: match card minWidth on mobile
       borderRadius: "18px",
       overflow: "hidden",
       bgcolor: "#fff",
@@ -691,12 +695,19 @@ export default function SlideProduct() {
         </Typography>
       )}
 
-      {/* ── Grid ── */}
+      {/* ── Grid (sm+) / Horizontal Scroll (xs) ── */}
       <Box
         sx={{
-          display: "grid",
+          // Mobile: flex row with horizontal scroll
+          display: { xs: "flex", sm: "grid" },
+          overflowX: { xs: "auto", sm: "visible" },
+          scrollSnapType: { xs: "x mandatory", sm: "unset" },
+          WebkitOverflowScrolling: "touch",
+          "&::-webkit-scrollbar": { display: { xs: "none", sm: "block" } },
+          scrollbarWidth: { xs: "none", sm: "auto" },
+          pb: { xs: 1.5, sm: 0 },
+          // Tablet+: original grid — completely unchanged
           gridTemplateColumns: {
-            xs: "repeat(2, 1fr)",
             sm: "repeat(3, 1fr)",
             md: "repeat(4, 1fr)",
             lg: "repeat(5, 1fr)",

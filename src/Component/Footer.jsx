@@ -465,16 +465,18 @@ function Footer() {
                 my: [-6, -8],
               }}
             >
-              <Box
-                component="img"
-                src="/Images/KT1.png"
-                alt="customer"
-                sx={{
-                  width: ["6rem", "8rem", "10.5rem"],
-                  height: ["6rem", "8rem", "10.5rem"],
-                  borderRadius: "100%",
-                }}
-              />
+              <Link to="/">
+                <Box
+                  component="img"
+                  src="/Images/KT1.png"
+                  alt="customer"
+                  sx={{
+                    width: ["6rem", "8rem", "10.5rem"],
+                    height: ["6rem", "8rem", "10.5rem"],
+                    borderRadius: "100%",
+                  }}
+                />
+              </Link>
             </Box>
           </Box>
           <Box sx={{ textAlign: "center", pt: 2 }}>

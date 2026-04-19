@@ -26,7 +26,6 @@ import Navbar from '../Component/Navbar';
 import Title from '../Component/Title.jsx';
 import TopBar from '../Component/Announcement.jsx';
 
-// ── SEO import ────────────────────────────────────────────────────────────────
 import { Helmet } from 'react-helmet-async';
 
 const FREE_SHIPPING_THRESHOLD = 500;
@@ -41,72 +40,72 @@ const brownLight = '#fdf5f2';
 const dark = '#1a1a1a';
 const surface = '#FAFAFA';
 
+// ─── Hover-only CSS (no font/size overrides) ──────────────────────────────────
+const HoverStyles = () => (
+    <style>{`
+        .kt-cart-card {
+            transition: all 0.25s cubic-bezier(.4,0,.2,1);
+            position: relative;
+        }
+        .kt-cart-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px; bottom: 14px;
+            width: 3px;
+            background: linear-gradient(to bottom, ${pinkDark}, ${pink});
+            border-radius: 0 4px 4px 0;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .kt-cart-card:hover {
+            box-shadow: 0 8px 32px rgba(233,30,140,0.10), 0 2px 8px rgba(0,0,0,0.04);
+            transform: translateY(-2px);
+            border-color: rgba(233,30,140,0.2) !important;
+        }
+        .kt-cart-card:hover::before { opacity: 1; }
+        .kt-img-wrap img { transition: transform 0.4s cubic-bezier(.4,0,.2,1); }
+        .kt-cart-card:hover .kt-img-wrap img { transform: scale(1.06); }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    `}</style>
+);
+
 // ─── Cart SEO ─────────────────────────────────────────────────────────────────
 const CartSEO = () => (
     <Helmet>
-        {/* Title */}
         <title>My Cart | Kudanthai Trends – Women's Jewellery & Fashion, Kumbakonam</title>
-
-        {/* Core meta */}
-        <meta
-            name="description"
-            content="Review your selected jewellery and fashion accessories in your Kudanthai Trends cart. Place your order via WhatsApp for fast delivery across Tamil Nadu."
-        />
-        <meta
-            name="keywords"
-            content="Kudanthai Trends cart, buy jewellery online Tamil Nadu, order earrings online, fashion accessories checkout, Kumbakonam jewellery order"
-        />
-        {/* Cart pages should not be indexed by Google */}
+        <meta name="description" content="Review your selected jewellery and fashion accessories in your Kudanthai Trends cart. Place your order via WhatsApp for fast delivery across Tamil Nadu." />
+        <meta name="keywords" content="Kudanthai Trends cart, buy jewellery online Tamil Nadu, order earrings online, fashion accessories checkout, Kumbakonam jewellery order" />
         <meta name="robots" content="noindex, nofollow" />
         <link rel="canonical" href="https://kudanthaitrends.in/cart" />
-
-        {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Kudanthai Trends" />
         <meta property="og:title" content="My Cart | Kudanthai Trends" />
-        <meta
-            property="og:description"
-            content="You're one step away! Complete your order at Kudanthai Trends and get trendy jewellery delivered to your door."
-        />
+        <meta property="og:description" content="You're one step away! Complete your order at Kudanthai Trends and get trendy jewellery delivered to your door." />
         <meta property="og:url" content="https://kudanthaitrends.in/cart" />
         <meta property="og:image" content="https://kudanthaitrends.in/Images/KT1.png" />
         <meta property="og:locale" content="en_IN" />
-
-        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="My Cart | Kudanthai Trends" />
-        <meta
-            name="twitter:description"
-            content="Complete your jewellery order at Kudanthai Trends – Kumbakonam. Fast WhatsApp ordering, delivery across Tamil Nadu."
-        />
+        <meta name="twitter:description" content="Complete your jewellery order at Kudanthai Trends – Kumbakonam. Fast WhatsApp ordering, delivery across Tamil Nadu." />
         <meta name="twitter:image" content="https://kudanthaitrends.in/Images/KT1.png" />
-
-        {/* JSON-LD – Checkout page structured data */}
-        <script type="application/ld+json">
-            {JSON.stringify({
-                '@context': 'https://schema.org',
-                '@type': 'CheckoutPage',
-                name: 'Shopping Cart – Kudanthai Trends',
-                url: 'https://kudanthaitrends.in/cart',
-                provider: {
-                    '@type': 'OnlineStore',
-                    name: 'Kudanthai Trends',
-                    url: 'https://kudanthaitrends.in',
-                    telephone: '+919500597455',
-                    email: 'kudanthaitrends@gmail.com',
-                    address: {
-                        '@type': 'PostalAddress',
-                        addressLocality: 'Kumbakonam',
-                        addressRegion: 'Tamil Nadu',
-                        addressCountry: 'IN',
-                    },
-                },
-            })}
-        </script>
+        <script type="application/ld+json">{JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'CheckoutPage',
+            name: 'Shopping Cart – Kudanthai Trends',
+            url: 'https://kudanthaitrends.in/cart',
+            provider: {
+                '@type': 'OnlineStore',
+                name: 'Kudanthai Trends',
+                url: 'https://kudanthaitrends.in',
+                telephone: '+919500597455',
+                email: 'kudanthaitrends@gmail.com',
+                address: { '@type': 'PostalAddress', addressLocality: 'Kumbakonam', addressRegion: 'Tamil Nadu', addressCountry: 'IN' },
+            },
+        })}</script>
     </Helmet>
 );
 
-// ─── Glassmorphism Dialog ───────────────────────────────────────────────────
+// ─── Glassmorphism Dialog ─────────────────────────────────────────────────────
 const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
     const [form, setForm] = useState({
         name: '', email: '', phone: '', address: '', pincode: '', city: ''
@@ -324,7 +323,6 @@ const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
                             <Typography variant="body2" color="text.secondary">
                                 Your order details are being prepared 🎉
                             </Typography>
-                            <style>{`@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }`}</style>
                         </Box>
                     </Fade>
                 )}
@@ -333,7 +331,7 @@ const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
     );
 };
 
-// ─── Main Cart Component ────────────────────────────────────────────────────
+// ─── Main Cart Component ──────────────────────────────────────────────────────
 const Cart = () => {
     const cartItems = useSelector((state) => state.cart.items);
     const dispatch = useDispatch();
@@ -349,9 +347,7 @@ const Cart = () => {
         dispatch(updateQuantity({ id, quantity: newQty }));
     };
 
-    const handleClearCart = () => {
-        dispatch(clearCart());
-    };
+    const handleClearCart = () => dispatch(clearCart());
 
     const handleShoppingClick = (form) => {
         const message = cartItems.map(item =>
@@ -385,13 +381,18 @@ const Cart = () => {
     const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
     const total = subtotal + shipping;
     const toFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
-
     const isOrderEnabled = subtotal >= MIN_ORDER_AMOUNT;
+
+    const totalSavings = cartItems.reduce((sum, item) => {
+        const orig = item.originalPrice || item.mrp || 0;
+        const qty = item.quantity || item.qty || 1;
+        return orig > item.price ? sum + (orig - item.price) * qty : sum;
+    }, 0);
 
     return (
         <>
-            {/* ── Cart SEO ── */}
             <CartSEO />
+            <HoverStyles />
 
             <TopBar />
             <Navbar color="#fff" />
@@ -410,7 +411,7 @@ const Cart = () => {
                                 MY CART
                             </Typography>
                             <Title color={dark}>Shopping Cart</Title>
-                            <Typography variant="body2" color="text.secondary" mt={0.5}>
+                            <Typography variant="body2" color="text.secondary">
                                 {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} waiting for you
                             </Typography>
                         </Box>
@@ -457,22 +458,21 @@ const Cart = () => {
                                         const qty = item.quantity || item.qty || 1;
                                         const originalPrice = item.originalPrice || item.mrp || null;
                                         const discountPct = originalPrice ? Math.round((1 - item.price / originalPrice) * 100) : null;
+                                        const savings = originalPrice && originalPrice > item.price
+                                            ? (originalPrice - item.price) * qty : 0;
 
                                         return (
                                             <Paper key={item.id} elevation={0}
+                                                className="kt-cart-card"
                                                 sx={{
                                                     p: 2.5, borderRadius: '20px',
                                                     border: '1px solid #f0f0f0',
                                                     bgcolor: '#fff',
-                                                    transition: 'all 0.25s',
-                                                    '&:hover': {
-                                                        boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-                                                        transform: 'translateY(-2px)',
-                                                        borderColor: 'rgba(233,30,140,0.2)'
-                                                    }
                                                 }}>
                                                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                                                    <Box sx={{ position: 'relative', flexShrink: 0 }}>
+
+                                                    {/* Image */}
+                                                    <Box className="kt-img-wrap" sx={{ position: 'relative', flexShrink: 0 }}>
                                                         <Box component="img"
                                                             src={item.image || item.img || item.imageUrl}
                                                             alt={item.name}
@@ -490,14 +490,34 @@ const Cart = () => {
                                                         )}
                                                     </Box>
 
+                                                    {/* Details */}
                                                     <Box sx={{ flex: 1, minWidth: 0 }}>
                                                         <Typography fontWeight={700} fontSize={15} color={dark} noWrap>
                                                             {item.name}
                                                         </Typography>
-                                                        {item.selectedGram && (
-                                                            <Chip label={`${item.selectedGram}g`} size="small"
-                                                                sx={{ mt: 0.4, height: 20, fontSize: 11, bgcolor: '#f5f5f5', color: '#666', '& .MuiChip-label': { px: 1 } }} />
-                                                        )}
+
+                                                        {/* Tags */}
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mt: 0.5, flexWrap: 'wrap' }}>
+                                                            {item.selectedGram && (
+                                                                <Chip label={`${item.selectedGram}g`} size="small"
+                                                                    sx={{
+                                                                        mt: 0.4, height: 20, fontSize: 11,
+                                                                        bgcolor: pinkLight, color: pinkDark,
+                                                                        border: `1px solid rgba(233,30,140,0.2)`,
+                                                                        '& .MuiChip-label': { px: 1 }
+                                                                    }} />
+                                                            )}
+                                                            {item.category && (
+                                                                <Chip label={item.category} size="small"
+                                                                    sx={{
+                                                                        mt: 0.4, height: 20, fontSize: 11,
+                                                                        bgcolor: '#f5f5f5', color: '#666',
+                                                                        '& .MuiChip-label': { px: 1 }
+                                                                    }} />
+                                                            )}
+                                                        </Box>
+
+                                                        {/* Price */}
                                                         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mt: 0.8 }}>
                                                             <Typography fontWeight={600} color={"#ff2d74"} fontSize={17}>
                                                                 ₹{item.price}
@@ -507,7 +527,19 @@ const Cart = () => {
                                                                     ₹{originalPrice}
                                                                 </Typography>
                                                             )}
+                                                            {/* Save pill — NEW */}
+                                                            {savings > 0 && (
+                                                                <Box sx={{
+                                                                    fontSize: 11, fontWeight: 600,
+                                                                    px: 1, py: '2px', borderRadius: '20px',
+                                                                    bgcolor: '#e8f7f0', color: '#007a4d',
+                                                                }}>
+                                                                    Save ₹{savings}
+                                                                </Box>
+                                                            )}
                                                         </Box>
+
+                                                        {/* Qty + line total */}
                                                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1.5 }}>
                                                             <Box sx={{
                                                                 display: 'flex', alignItems: 'center',
@@ -532,6 +564,7 @@ const Cart = () => {
                                                         </Box>
                                                     </Box>
 
+                                                    {/* Delete */}
                                                     <IconButton onClick={() => handleRemoveFromCart(item.id)}
                                                         sx={{
                                                             color: '#ccc', alignSelf: 'flex-start',
@@ -575,8 +608,18 @@ const Cart = () => {
                                                 {shipping === 0 ? '✓ FREE' : `₹${shipping}`}
                                             </Typography>
                                         </Box>
+                                        {/* You saved row — NEW */}
+                                        {totalSavings > 0 && (
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <Typography variant="body2" color="text.secondary">You saved</Typography>
+                                                <Typography variant="body2" fontWeight={600} color="#007a4d">
+                                                    ₹{totalSavings}.00
+                                                </Typography>
+                                            </Box>
+                                        )}
                                     </Stack>
 
+                                    {/* Free shipping progress */}
                                     {toFreeShipping > 0 && subtotal > 0 && (
                                         <Box sx={{ mt: 2, p: 1.5, borderRadius: '12px', bgcolor: pinkLight, border: `1px solid rgba(233,30,140,0.15)` }}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -595,6 +638,15 @@ const Cart = () => {
                                                     transition: 'width 0.5s ease'
                                                 }} />
                                             </Box>
+                                        </Box>
+                                    )}
+
+                                    {/* Unlocked — NEW */}
+                                    {subtotal >= FREE_SHIPPING_THRESHOLD && subtotal > 0 && (
+                                        <Box sx={{ mt: 2, p: 1.5, borderRadius: '12px', bgcolor: '#e8f7f0', border: '1px solid rgba(0,168,107,0.2)' }}>
+                                            <Typography variant="caption" color="#007a4d" fontWeight={600}>
+                                                🎉 Free shipping unlocked!
+                                            </Typography>
                                         </Box>
                                     )}
 
@@ -652,6 +704,22 @@ const Cart = () => {
                                         }}>
                                         ← Continue Shopping
                                     </Button>
+
+                                    {/* Trust badges — NEW */}
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2.5, pt: 2, borderTop: '1px solid #f5f5f5' }}>
+                                        {[
+                                            { icon: '🔒', label: 'Secure' },
+                                            { icon: '✅', label: 'Verified' },
+                                            { icon: '🚚', label: 'Fast Delivery' },
+                                        ].map(b => (
+                                            <Box key={b.label} sx={{ textAlign: 'center' }}>
+                                                <Typography fontSize={16}>{b.icon}</Typography>
+                                                <Typography variant="caption" color="text.secondary" display="block" fontSize={10}>
+                                                    {b.label}
+                                                </Typography>
+                                            </Box>
+                                        ))}
+                                    </Box>
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -667,7 +735,7 @@ const Cart = () => {
                 onConfirm={handleShoppingClick}
             />
 
-            <Box sx={{ bgcolor: dark, px: 2 }}>
+            <Box sx={{ bgcolor: "#000", px: 2 }}>
                 <Footer />
             </Box>
         </>

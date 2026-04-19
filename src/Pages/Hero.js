@@ -79,13 +79,13 @@ const Hero = () => {
                 </Box>
             </Box>
             <FeaturesSection />
-            <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>
+            <Box sx={{ px: { xs: 2, md: 6 } }}>
                 <Typography variant="h4" sx={{ fontSize: ["25px", "20px", "35px"] }} fontWeight={700} color={"black"} pt={5}>
                     Read our customers say
                 </Typography>
                 <CustomerReview />
             </Box>
-            <Box sx={{ bgcolor: 'black', mt: 20, px: 2 }}>
+            <Box sx={{ bgcolor: 'black', mt: [8, 20], px: 2 }}>
                 <Footer />
             </Box>
         </Box >

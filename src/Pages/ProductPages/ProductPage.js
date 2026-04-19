@@ -537,16 +537,16 @@ const ProductPage = () => {
         sx={{ width: ['65%', '40%', '22%'], zIndex: -1, ml: [-8, -10], mt: [0, 18, -4], position: 'absolute', opacity: 0.7, filter: 'saturate(1.3)' }}
       />
 
-      <Box sx={{ px: [2, 5, 6], pt: 9, pb: 1 }}>
+      <Box sx={{ px: [2, 5, 6], pt: [5, 9], pb: 1 }}>
         <Title title={categoryName} />
         {!isLoading && products.length > 0 && (
-          <Typography sx={{ mt: 0.5, fontSize: '0.85rem', color: '#6b7280' }}>
+          <Typography sx={{ mt: [-1, 0.5], fontSize: '0.85rem', color: '#6b7280' }}>
             {products.length} product{products.length !== 1 ? 's' : ''} available
           </Typography>
         )}
       </Box>
 
-      <Box sx={{ px: [2, 3, 4], py: 5 }}>
+      <Box sx={{ px: [2, 3, 4], py: [2, 5] }}>
         {!isLoading && products.length === 0 ? (
           <EmptyState />
         ) : (
@@ -560,7 +560,7 @@ const ProductPage = () => {
         )}
       </Box>
 
-      <Box sx={{ bgcolor: '#000', mt: 16, px: 2 }}>
+      <Box sx={{ bgcolor: '#000', mt: 10, px: 2 }}>
         <Footer />
       </Box>
     </>
