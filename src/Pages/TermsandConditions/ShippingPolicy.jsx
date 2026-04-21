@@ -13,12 +13,7 @@ import Footer from "../../Component/Footer";
 
 const Section = ({ title, children }) => (
   <Box mb={5}>
-    <Typography
-      variant="h6"
-      fontWeight={700}
-      color="#ff2d74"
-      mb={1.5}
-    >
+    <Typography variant="h6" fontWeight={700} color="#ff2d74" mb={1.5}>
       {title}
     </Typography>
     <Typography variant="body2" color="text.secondary" lineHeight={1.9}>
@@ -56,7 +51,6 @@ export default function ShippingPolicy() {
 
       <Box sx={{ bgcolor: "#fff8fa", minHeight: "100vh", py: 6 }}>
         <Container maxWidth="md">
-
           {/* Header */}
           <Stack alignItems="center" mb={6}>
             <Box
@@ -79,7 +73,7 @@ export default function ShippingPolicy() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary">
-              Last updated: June 1, 2025
+              Last updated: April 19, 2026
             </Typography>
           </Stack>
 
@@ -101,17 +95,18 @@ export default function ShippingPolicy() {
             }}
           >
             <Typography mb={4} color="text.secondary">
-              This Shipping Policy explains how orders are processed and delivered.
-              Please read carefully before placing an order.
+              This Shipping Policy explains how orders are processed and
+              delivered. Please read carefully before placing an order.
             </Typography>
 
             <Divider sx={{ mb: 4 }} />
 
             <Section title="1. Order Process">
-              Orders are placed exclusively through WhatsApp integration.
-              After selecting products, you will be redirected to WhatsApp to
-              confirm your order.
-              <br /><br />
+              Orders are placed exclusively through WhatsApp integration. After
+              selecting products, you will be redirected to WhatsApp to confirm
+              your order.
+              <br />
+              <br />
               We do not provide order tracking functionality. All updates will
               be communicated via WhatsApp.
             </Section>
@@ -123,25 +118,30 @@ export default function ShippingPolicy() {
             </Section>
 
             <Section title="3. Delivery Time">
-              Orders are typically delivered within <strong>3–5 business days</strong>
+              Orders are typically delivered within{" "}
+              <strong>3–5 business days</strong>
               after confirmation.
-              <br /><br />
-              Delivery time may vary slightly based on location and availability.
+              <br />
+              <br />
+              Delivery time may vary slightly based on location and
+              availability.
             </Section>
 
             <Section title="4. Shipping Charges">
               • Orders above ₹499 — <strong>Free Shipping</strong>
-              <br />
-              • Orders below ₹499 — Shipping charges may apply and will be
+              <br />• Orders below ₹499 — Shipping charges may apply and will be
               communicated via WhatsApp during order confirmation.
             </Section>
 
             <Section title="5. Payment Method">
               • Only <strong>online payments</strong> are accepted.
               <br />
-              • Payment details will be shared through WhatsApp after order confirmation.
-              <br />
-              • Cash on Delivery (COD) is <strong>not available</strong> in this version.
+              • Payment details will be shared through WhatsApp after order
+              confirmation.
+              <br />• Cash on Delivery (COD) is <strong>
+                not available
+              </strong>{" "}
+              in this version.
             </Section>
 
             <Section title="6. No Tracking Availability">
@@ -156,7 +156,6 @@ export default function ShippingPolicy() {
               <br />
               📍 Location: <strong>Kumbakonam, Tamil Nadu, India</strong>
             </Section>
-
           </Box>
         </Container>
       </Box>

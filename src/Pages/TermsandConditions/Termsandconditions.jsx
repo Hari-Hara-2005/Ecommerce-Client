@@ -32,9 +32,10 @@ export default function TermsAndConditions() {
       <TopBar />
       <Navbar color="#fff" />
 
-      <Box sx={{ bgcolor: "#fff8fa", minHeight: "100vh", py: { xs: 4, md: 8 } }}>
+      <Box
+        sx={{ bgcolor: "#fff8fa", minHeight: "100vh", py: { xs: 4, md: 8 } }}
+      >
         <Container maxWidth="md">
-
           {/* Header */}
           <Stack alignItems="center" mb={6}>
             <Box
@@ -63,7 +64,7 @@ export default function TermsAndConditions() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" mt={1}>
-              Last updated: June 1, 2025
+              Last updated: April 19, 2026
             </Typography>
           </Stack>
 
@@ -91,13 +92,16 @@ export default function TermsAndConditions() {
             {/* ✅ IMPORTANT NEW SECTION */}
             <Section title="1. Order Process">
               Our website is designed for browsing products and placing orders
-              exclusively through WhatsApp integration. Once you select a product,
-              you will be redirected to WhatsApp to complete your order.
-              <br /><br />
-              We do not provide order tracking functionality on our website.
-              All order communication, confirmation, and updates are handled
+              exclusively through WhatsApp integration. Once you select a
+              product, you will be redirected to WhatsApp to complete your
+              order.
+              <br />
+              <br />
+              We do not provide order tracking functionality on our website. All
+              order communication, confirmation, and updates are handled
               directly via WhatsApp.
-              <br /><br />
+              <br />
+              <br />
               In our latest version, we have improved the user interface and
               overall experience while keeping the same product content and
               ordering process unchanged.
@@ -106,39 +110,36 @@ export default function TermsAndConditions() {
             <Section title="2. Products Information">
               • We strive to display accurate product details and images.
               <br />
-              • Slight variations in color or appearance may occur due to lighting
-              and screen differences.
-              <br />
-              • Product availability may change without notice.
+              • Slight variations in color or appearance may occur due to
+              lighting and screen differences.
+              <br />• Product availability may change without notice.
             </Section>
 
             <Section title="3. Pricing">
               • All prices are listed in Indian Rupees (₹).
               <br />
               • Prices are subject to change without prior notice.
-              <br />
-              • Final pricing and confirmation will be shared via WhatsApp during
-              order processing.
+              <br />• Final pricing and confirmation will be shared via WhatsApp
+              during order processing.
             </Section>
 
             <Section title="4. Orders & Confirmation">
               • Orders are confirmed only after communication through WhatsApp.
               <br />
               • We reserve the right to accept or reject any order.
-              <br />
-              • Customers must provide accurate details while placing orders.
+              <br />• Customers must provide accurate details while placing
+              orders.
             </Section>
 
             <Section title="5. Payments">
-              • Payment instructions will be provided via WhatsApp after order confirmation.
-              <br />
-              • We do not process payments directly on the website.
+              • Payment instructions will be provided via WhatsApp after order
+              confirmation.
+              <br />• We do not process payments directly on the website.
             </Section>
 
             <Section title="6. Cancellation & Changes">
               • Orders can be modified or cancelled only before confirmation.
-              <br />
-              • Once processed, cancellations may not be possible.
+              <br />• Once processed, cancellations may not be possible.
             </Section>
 
             <Section title="7. Limitation of Liability">
@@ -163,7 +164,6 @@ export default function TermsAndConditions() {
               <br />
               🏢 Address: <strong>Kumbakonam, Tamil Nadu, India</strong>
             </Section>
-
           </Box>
         </Container>
       </Box>

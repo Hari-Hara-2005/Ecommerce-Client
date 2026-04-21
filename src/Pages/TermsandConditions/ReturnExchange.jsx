@@ -59,7 +59,7 @@ export default function ReturnExchangePolicy() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary">
-              Last updated: June 1, 2025
+                Last updated: April 19, 2026
             </Typography>
           </Stack>
 
