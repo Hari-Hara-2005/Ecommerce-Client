@@ -8,7 +8,7 @@ export default function TopBar() {
   const [messages, setMessages] = useState([]);
   const [index, setIndex] = useState(0);
 
-  // ✅ FETCH FROM topbar TABLE
+  // ✅ FETCH FROM API
   useEffect(() => {
     const fetchTopbar = async () => {
       try {
@@ -23,17 +23,33 @@ export default function TopBar() {
     fetchTopbar();
   }, []);
 
+  // ✅ AUTO SLIDE (every 3 seconds)
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    const interval = setInterval(() => {
+      setIndex((prev) =>
+        prev === messages.length - 1 ? 0 : prev + 1
+      );
+    }, 3000); // change time here
+
+    return () => clearInterval(interval); // cleanup
+  }, [messages]);
+
   // ✅ PREVIOUS
   const prevMsg = () => {
-    setIndex((prev) => (prev === 0 ? messages.length - 1 : prev - 1));
+    setIndex((prev) =>
+      prev === 0 ? messages.length - 1 : prev - 1
+    );
   };
 
   // ✅ NEXT
   const nextMsg = () => {
-    setIndex((prev) => (prev === messages.length - 1 ? 0 : prev + 1));
+    setIndex((prev) =>
+      prev === messages.length - 1 ? 0 : prev + 1
+    );
   };
 
-  // ❗ IMPORTANT: prevent crash before data loads
   if (messages.length === 0) return null;
 
   return (
@@ -50,6 +66,7 @@ export default function TopBar() {
       }}
     >
       <Stack direction="row" alignItems="center" spacing={5}>
+        
         {/* LEFT BUTTON */}
         <IconButton size="small" onClick={prevMsg}>
           <ArrowBackIosNewIcon sx={{ fontSize: 12 }} />
