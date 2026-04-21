@@ -64,7 +64,7 @@ export default function PrivacyPolicy() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" mt={1}>
-              Last updated: June 1, 2025
+              Last updated: April 19, 2026
             </Typography>
           </Stack>
 
