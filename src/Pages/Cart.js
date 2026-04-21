@@ -28,7 +28,7 @@ import TopBar from '../Component/Announcement.jsx';
 
 import { Helmet } from 'react-helmet-async';
 
-const FREE_SHIPPING_THRESHOLD = 500;
+const FREE_SHIPPING_THRESHOLD = 299;
 const SHIPPING_COST = 50;
 const MIN_ORDER_AMOUNT = 100;
 
