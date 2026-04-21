@@ -28,8 +28,8 @@ import TopBar from '../Component/Announcement.jsx';
 
 import { Helmet } from 'react-helmet-async';
 
-const FREE_SHIPPING_THRESHOLD = 299;
-const SHIPPING_COST = 50;
+const FREE_SHIPPING_THRESHOLD = 249;
+const SHIPPING_COST = 49;
 const MIN_ORDER_AMOUNT = 100;
 
 const pink = '#E91E8C';
