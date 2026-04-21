@@ -5,7 +5,9 @@ import {
     Stack, Divider, Paper, IconButton, DialogContent,
     InputAdornment,
     Fade, Slide,
-    Dialog
+    Dialog,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -40,7 +42,7 @@ const brownLight = '#fdf5f2';
 const dark = '#1a1a1a';
 const surface = '#FAFAFA';
 
-// ─── Hover-only CSS (no font/size overrides) ──────────────────────────────────
+// ─── Hover-only CSS ───────────────────────────────────────────────────────────
 const HoverStyles = () => (
     <style>{`
         .kt-cart-card {
@@ -66,6 +68,15 @@ const HoverStyles = () => (
         .kt-img-wrap img { transition: transform 0.4s cubic-bezier(.4,0,.2,1); }
         .kt-cart-card:hover .kt-img-wrap img { transform: scale(1.06); }
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+
+        /* Sticky bar slide-up */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .kt-sticky-bar {
+            animation: slideUp 0.35s cubic-bezier(.34,1.56,.64,1) both;
+        }
     `}</style>
 );
 
@@ -105,7 +116,7 @@ const CartSEO = () => (
     </Helmet>
 );
 
-// ─── Glassmorphism Dialog ─────────────────────────────────────────────────────
+// ─── Order Dialog ─────────────────────────────────────────────────────────────
 const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
     const [form, setForm] = useState({
         name: '', email: '', phone: '', address: '', pincode: '', city: ''
@@ -172,7 +183,7 @@ const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
                 sx: { backdropFilter: 'blur(6px)', bgcolor: 'rgba(0,0,0,0.45)' }
             }}
         >
-            {/* Header gradient */}
+            {/* Header */}
             <Box sx={{
                 background: `linear-gradient(135deg, ${pinkDark} 0%, ${pink} 60%, #ff6eb4 100%)`,
                 px: 3, py: 2.5,
@@ -331,10 +342,96 @@ const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
     );
 };
 
+// ─── Mobile Sticky Bottom Bar ─────────────────────────────────────────────────
+const MobileStickyBar = ({ total, itemCount, isOrderEnabled, onPlaceOrder, shipping, subtotal }) => (
+    <Box
+        className="kt-sticky-bar"
+        sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1200,
+            // Safe area for notched phones
+            pb: 'env(safe-area-inset-bottom)',
+            bgcolor: '#fff',
+            borderTop: '1px solid rgba(233,30,140,0.15)',
+            boxShadow: '0 -8px 32px rgba(233,30,140,0.12)',
+            px: 2,
+            pt: 1.5,
+            pb: 1.5,
+            display: { xs: 'block', md: 'none' },
+        }}
+    >
+        {/* Mini summary row */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.2 }}>
+            <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                    {itemCount} item{itemCount !== 1 ? 's' : ''}
+                    {shipping === 0 && subtotal > 0 && (
+                        <Box component="span" sx={{ ml: 0.8, color: '#00C853', fontWeight: 700 }}>· FREE shipping</Box>
+                    )}
+                </Typography>
+                <Typography fontWeight={900} fontSize={22} color={pink} lineHeight={1.1} display="block">
+                    ₹{total}
+                </Typography>
+            </Box>
+
+            <Button
+                variant="contained"
+                size="large"
+                endIcon={<ShoppingCartCheckoutIcon />}
+                onClick={onPlaceOrder}
+                disabled={!isOrderEnabled}
+                sx={{
+                    background: isOrderEnabled
+                        ? `linear-gradient(135deg, ${pinkDark}, ${pink})`
+                        : undefined,
+                    borderRadius: '14px',
+                    px: 3,
+                    py: 1.4,
+                    fontWeight: 800,
+                    fontSize: 15,
+                    textTransform: 'none',
+                    boxShadow: isOrderEnabled ? `0 6px 20px rgba(233,30,140,0.38)` : 'none',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.25s',
+                    '&:hover': {
+                        background: `linear-gradient(135deg, #880e4f, ${pinkDark})`,
+                        transform: 'translateY(-1px)',
+                        boxShadow: `0 10px 28px rgba(233,30,140,0.45)`,
+                    },
+                    '&.Mui-disabled': {
+                        background: '#e0e0e0',
+                        color: '#aaa',
+                        boxShadow: 'none',
+                    }
+                }}
+            >
+                Place Order
+            </Button>
+        </Box>
+        {!isOrderEnabled && subtotal > 0 && (
+            <Typography variant="caption" color="error" display="block" textAlign="center" mt={1}>
+                Minimum order amount is ₹{MIN_ORDER_AMOUNT}. Add ₹{MIN_ORDER_AMOUNT - subtotal} more to proceed.
+            </Typography>
+        )}
+        {/* WhatsApp hint */}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+            <WhatsAppIcon sx={{ fontSize: 13, color: '#25D366' }} />
+            <Typography variant="caption" color="text.secondary" fontSize={11}>
+                Order placed via WhatsApp · Fast & Secure
+            </Typography>
+        </Box>
+    </Box>
+);
+
 // ─── Main Cart Component ──────────────────────────────────────────────────────
 const Cart = () => {
     const cartItems = useSelector((state) => state.cart.items);
     const dispatch = useDispatch();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -368,8 +465,8 @@ const Cart = () => {
 
         const encodedMessage = encodeURIComponent(fullMessage);
         const whatsappNumber = '919500597455';
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const url = isMobile
+        const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const url = isMobileDevice
             ? `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
             : `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
 
@@ -398,7 +495,13 @@ const Cart = () => {
             <TopBar />
             <Navbar color="#fff" />
 
-            <Box sx={{ pt: '3%', bgcolor: surface, minHeight: '100vh' }}>
+            <Box sx={{
+                pt: '3%',
+                bgcolor: surface,
+                minHeight: '100vh',
+                // On mobile, add bottom padding so cart items aren't hidden behind sticky bar
+                pb: { xs: '90px', md: 0 },
+            }}>
                 {/* Decorative blob */}
                 <Box component="img" src="Images/leaf3.avif" alt="leaf"
                     sx={{ width: ['70%', '50%', '22%'], zIndex: 0, ml: [-10], mt: [0, 18, -2], position: 'absolute', opacity: 0.55 }} />
@@ -528,7 +631,6 @@ const Cart = () => {
                                                                     ₹{originalPrice}
                                                                 </Typography>
                                                             )}
-                                                            {/* Save pill — NEW */}
                                                             {savings > 0 && (
                                                                 <Box sx={{
                                                                     fontSize: 11, fontWeight: 600,
@@ -581,13 +683,14 @@ const Cart = () => {
                                 </Stack>
                             </Grid>
 
-                            {/* ── Order Summary ── */}
+                            {/* ── Order Summary (desktop only sticky panel) ── */}
                             <Grid item xs={12} md={4}>
                                 <Paper elevation={0} sx={{
                                     p: 3, borderRadius: '20px',
                                     border: '1px solid #f0f0f0',
                                     bgcolor: '#fff',
-                                    position: 'sticky', top: 20
+                                    position: { md: 'sticky' },
+                                    top: { md: 20 },
                                 }}>
                                     <Typography variant="h6" fontWeight={800} color={dark} mb={0.5} fontFamily="'Playfair Display', serif">
                                         Order Summary
@@ -609,7 +712,6 @@ const Cart = () => {
                                                 {shipping === 0 ? '✓ FREE' : `₹${shipping}`}
                                             </Typography>
                                         </Box>
-                                        {/* You saved row — NEW */}
                                         {totalSavings > 0 && (
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <Typography variant="body2" color="text.secondary">You saved</Typography>
@@ -642,7 +744,6 @@ const Cart = () => {
                                         </Box>
                                     )}
 
-                                    {/* Unlocked — NEW */}
                                     {subtotal >= FREE_SHIPPING_THRESHOLD && subtotal > 0 && (
                                         <Box sx={{ mt: 2, p: 1.5, borderRadius: '12px', bgcolor: '#e8f7f0', border: '1px solid rgba(0,168,107,0.2)' }}>
                                             <Typography variant="caption" color="#007a4d" fontWeight={600}>
@@ -663,11 +764,13 @@ const Cart = () => {
                                         </Box>
                                     </Box>
 
+                                    {/* Desktop Place Order button — hidden on mobile (sticky bar handles it) */}
                                     <Button fullWidth variant="contained" size="large"
                                         endIcon={<ShoppingCartCheckoutIcon />}
                                         onClick={() => setDialogOpen(true)}
                                         disabled={!isOrderEnabled}
                                         sx={{
+                                            display: { xs: 'none', md: 'flex' },
                                             background: isOrderEnabled
                                                 ? `linear-gradient(135deg, ${pinkDark}, ${pink})`
                                                 : undefined,
@@ -706,7 +809,7 @@ const Cart = () => {
                                         ← Continue Shopping
                                     </Button>
 
-                                    {/* Trust badges — NEW */}
+                                    {/* Trust badges */}
                                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2.5, pt: 2, borderTop: '1px solid #f5f5f5' }}>
                                         {[
                                             { icon: '🔒', label: 'Secure' },
@@ -727,6 +830,18 @@ const Cart = () => {
                     )}
                 </Box>
             </Box>
+
+            {/* ── Mobile Sticky Place Order Bar ── */}
+            {cartItems.length > 0 && (
+                <MobileStickyBar
+                    total={total}
+                    itemCount={cartItems.length}
+                    isOrderEnabled={isOrderEnabled}
+                    onPlaceOrder={() => setDialogOpen(true)}
+                    shipping={shipping}
+                    subtotal={subtotal}
+                />
+            )}
 
             <OrderDialog
                 open={dialogOpen}
