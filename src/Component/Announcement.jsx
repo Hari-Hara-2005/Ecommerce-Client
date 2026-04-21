@@ -22,7 +22,8 @@ export default function TopBar() {
 
     fetchTopbar();
   }, []);
-)
+
+  
   useEffect(() => {
     if (messages.length === 0) return;
 
