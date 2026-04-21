@@ -13,12 +13,31 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { addToCart } from "../redux/cartSlice";
 import { toast } from "react-toastify";
 import api from "../utils/api";
+
+// ─── Constants ─────────────────────────────────────────────────────────────────
+const MOBILE_LIMIT = 4;
+
+// ─── Custom hook: track window width ──────────────────────────────────────────
+function useIsMobile(breakpoint = 600) {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false,
+  );
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, [breakpoint]);
+  return isMobile;
+}
 
 // ─── Keyframes ────────────────────────────────────────────────────────────────
 const fadeUp = keyframes`
@@ -54,6 +73,11 @@ const badgePop = keyframes`
   0%   { transform: scale(0.6); opacity: 0; }
   70%  { transform: scale(1.1); }
   100% { transform: scale(1); opacity: 1; }
+`;
+const viewAllPulse = keyframes`
+  0%   { box-shadow: 0 0 0 0 rgba(255,45,116,0.3); }
+  70%  { box-shadow: 0 0 0 8px rgba(255,45,116,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,45,116,0); }
 `;
 
 // ─── Shimmer skeleton ─────────────────────────────────────────────────────────
@@ -241,8 +265,8 @@ const ProductCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
       sx={{
         minWidth: { xs: 250, sm: 230, md: 280 },
         maxWidth: { xs: 195, sm: 230, md: 250 },
-        flexShrink: 0,         // ← added: prevent squishing in flex row
-        scrollSnapAlign: "start", // ← added: snap per card on mobile swipe
+        flexShrink: 0,
+        scrollSnapAlign: "start",
         borderRadius: "18px",
         overflow: "hidden",
         bgcolor: "#fff",
@@ -383,7 +407,7 @@ const ProductCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
             transition: "all 0.3s ease",
             zIndex: 4,
           }}
-        ></Box>
+        />
       </Box>
 
       {/* ── Card body ── */}
@@ -566,9 +590,9 @@ const ProductCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
 const SkeletonCard = ({ index }) => (
   <Box
     sx={{
-      flexShrink: 0,            // ← added
-      scrollSnapAlign: "start", // ← added
-      minWidth: { xs: 250, sm: "unset" }, // ← added: match card minWidth on mobile
+      flexShrink: 0,
+      scrollSnapAlign: "start",
+      minWidth: { xs: 250, sm: "unset" },
       borderRadius: "18px",
       overflow: "hidden",
       bgcolor: "#fff",
@@ -589,14 +613,94 @@ const SkeletonCard = ({ index }) => (
   </Box>
 );
 
+// ─── View All Button ──────────────────────────────────────────────────────────
+const ViewAllButton = ({ onNavigate, totalCount, categoryName }) => {
+  const hiddenCount = totalCount - MOBILE_LIMIT;
+
+  return (
+    <Box sx={{ mt: 2, animation: `${fadeUp} 0.4s ease both` }}>
+      <Button
+        fullWidth
+        onClick={onNavigate}
+        startIcon={<GridViewRoundedIcon sx={{ fontSize: "1rem !important" }} />}
+        endIcon={
+          <ChevronRightIcon
+            sx={{ fontSize: "1.1rem !important" }}
+          />
+        }
+        sx={{
+          borderRadius: "14px",
+          border: "1.5px solid #ff2d74",
+          color: "#ff2d74",
+          bgcolor: "transparent",
+          textTransform: "none",
+          fontWeight: 700,
+          fontSize: "0.85rem",
+          py: 1.4,
+          letterSpacing: 0.4,
+          transition: "all 0.25s cubic-bezier(.34,1.56,.64,1)",
+          position: "relative",
+          overflow: "hidden",
+          animation: `${viewAllPulse} 2.5s ease-in-out 1.2s 2`,
+          "&:hover": {
+            bgcolor: "rgba(255,45,116,0.05)",
+            transform: "translateY(-2px)",
+            boxShadow: "0 6px 20px rgba(255,45,116,0.18)",
+          },
+          "&:active": { transform: "scale(0.98)" },
+        }}
+      >
+        <Box
+          component="span"
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        > 
+          View all {categoryName} products
+          <Box
+            component="span"
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: "#ff2d74",
+              color: "#fff",
+              fontSize: "0.68rem",
+              fontWeight: 800,
+              borderRadius: "50px",
+              px: 1,
+              py: 0.2,
+              minWidth: 28,
+              lineHeight: 1.6,
+            }}
+          >
+            +{hiddenCount}
+          </Box>
+        </Box>
+      </Button>
+    </Box>
+  );
+};
+
 // ─── Main export ──────────────────────────────────────────────────────────────
 export default function SlideProduct() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isMobile = useIsMobile(600);
+
   const [categories, setCategories] = useState([]);
   const [activeSlug, setActiveSlug] = useState("");
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+
+  // Derive active category name for the button label
+  const activeCategoryName =
+    categories.find((c) => c.slug === activeSlug)?.category_name ?? "";
+
+  // Products to actually render — limited on mobile
+  const visibleProducts = isMobile ? products.slice(0, MOBILE_LIMIT) : products;
+
+  const hasMoreOnMobile =
+    isMobile && !isLoading && products.length > MOBILE_LIMIT;
 
   useEffect(() => {
     api
@@ -691,14 +795,15 @@ export default function SlideProduct() {
             letterSpacing: 0.3,
           }}
         >
-          Showing {products.length} item{products.length !== 1 ? "s" : ""}
+          {isMobile && products.length > MOBILE_LIMIT
+            ? `Showing ${MOBILE_LIMIT} of ${products.length} items`
+            : `Showing ${products.length} item${products.length !== 1 ? "s" : ""}`}
         </Typography>
       )}
 
       {/* ── Grid (sm+) / Horizontal Scroll (xs) ── */}
       <Box
         sx={{
-          // Mobile: flex row with horizontal scroll
           display: { xs: "flex", sm: "grid" },
           overflowX: { xs: "auto", sm: "visible" },
           scrollSnapType: { xs: "x mandatory", sm: "unset" },
@@ -706,7 +811,6 @@ export default function SlideProduct() {
           "&::-webkit-scrollbar": { display: { xs: "none", sm: "block" } },
           scrollbarWidth: { xs: "none", sm: "auto" },
           pb: { xs: 1.5, sm: 0 },
-          // Tablet+: original grid — completely unchanged
           gridTemplateColumns: {
             sm: "repeat(3, 1fr)",
             md: "repeat(4, 1fr)",
@@ -740,7 +844,7 @@ export default function SlideProduct() {
         )}
 
         {!isLoading &&
-          products.map((item, index) => (
+          visibleProducts.map((item, index) => (
             <ProductCard
               key={item._id}
               item={item}
@@ -751,6 +855,15 @@ export default function SlideProduct() {
             />
           ))}
       </Box>
+
+      {/* ── View All button (mobile only, when there are more products) ── */}
+      {hasMoreOnMobile && (
+        <ViewAllButton
+          onNavigate={() => navigate(`/category/${activeSlug}`)}
+          totalCount={products.length}
+          categoryName={activeCategoryName}
+        />
+      )}
     </Box>
   );
 }

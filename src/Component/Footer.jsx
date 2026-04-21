@@ -399,7 +399,7 @@ function Footer() {
                 <Box sx={{ mt: 2 }}>
                   <Fab
                     component="a"
-                    href="https://wa.me/9500597455"
+                    href="https://wa.me/919500597455"
                     sx={{
                       backgroundColor: "white",
                       mx: 0.5,
@@ -521,7 +521,7 @@ function Footer() {
         >
           <Fab
             component="a"
-            href="https://wa.me/9500597455"
+            href="https://wa.me/919500597455"
             size="small"
             sx={{
               backgroundColor: "white",

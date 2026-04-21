@@ -44,7 +44,7 @@ const Hero = () => {
             </Box>
             <Box sx={{ bgcolor: '#fff' }} >
                 <Box sx={{ px: { xs: 2, md: 6 } }}>
-                    <Title title="Estailo Exclusive" subtitle="Rare Finds" />
+                    <Title title="KudanthaiTrends Exclusive" subtitle="Rare Finds" />
                     <SlideProduct />
                 </Box>
                 <Box sx={{ px: { xs: 2, md: 6 }, py: 5 }}>

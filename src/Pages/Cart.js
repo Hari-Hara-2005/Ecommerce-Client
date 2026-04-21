@@ -374,6 +374,7 @@ const Cart = () => {
             : `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
 
         window.open(url, '_blank');
+        dispatch(clearCart());
         setDialogOpen(false);
     };
 
