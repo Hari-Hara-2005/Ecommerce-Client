@@ -6,8 +6,6 @@ import {
     InputAdornment,
     Fade, Slide,
     Dialog,
-    useMediaQuery,
-    useTheme
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -359,7 +357,6 @@ const MobileStickyBar = ({ total, itemCount, isOrderEnabled, onPlaceOrder, shipp
             boxShadow: '0 -8px 32px rgba(233,30,140,0.12)',
             px: 2,
             pt: 1.5,
-            pb: 1.5,
             display: { xs: 'block', md: 'none' },
         }}
     >
@@ -430,8 +427,6 @@ const MobileStickyBar = ({ total, itemCount, isOrderEnabled, onPlaceOrder, shipp
 const Cart = () => {
     const cartItems = useSelector((state) => state.cart.items);
     const dispatch = useDispatch();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
