@@ -8,7 +8,7 @@ export default function TopBar() {
   const [messages, setMessages] = useState([]);
   const [index, setIndex] = useState(0);
 
-  // ✅ FETCH FROM API
+
   useEffect(() => {
     const fetchTopbar = async () => {
       try {
@@ -22,8 +22,7 @@ export default function TopBar() {
 
     fetchTopbar();
   }, []);
-
-  // ✅ AUTO SLIDE (every 3 seconds)
+)
   useEffect(() => {
     if (messages.length === 0) return;
 
