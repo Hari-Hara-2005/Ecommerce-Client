@@ -27,10 +27,15 @@ import Title from '../Component/Title.jsx';
 import TopBar from '../Component/Announcement.jsx';
 
 import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
+import api from '../utils/api.js';
 
 const FREE_SHIPPING_THRESHOLD = 249;
-const SHIPPING_COST = 49;
 const MIN_ORDER_AMOUNT = 100;
+
+
+
+
 
 const pink = '#E91E8C';
 const pinkLight = '#FCE4F3';
@@ -160,6 +165,7 @@ const OrderDialog = ({ open, onClose, cartItems, total, onConfirm }) => {
         },
         '& .MuiInputLabel-root.Mui-focused': { color: pink },
     };
+
 
     return (
         <Dialog
@@ -469,9 +475,23 @@ const Cart = () => {
         dispatch(clearCart());
         setDialogOpen(false);
     };
+    const [prices, setPrices] = useState(49);
+    useEffect(() => {
+        const fetchPrices = async () => {
+            try {
+                const res = await api.get("/api/delivery");
+                const price = Number(res.data[0]?.price) || 0;
 
+                setPrices(price);
+            } catch (err) {
+                console.log(err.message);
+            }
+        };
+
+        fetchPrices();
+    }, []);
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || item.qty || 1)), 0);
-    const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+    const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : prices;
     const total = subtotal + shipping;
     const toFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
     const isOrderEnabled = subtotal >= MIN_ORDER_AMOUNT;
@@ -481,6 +501,7 @@ const Cart = () => {
         const qty = item.quantity || item.qty || 1;
         return orig > item.price ? sum + (orig - item.price) * qty : sum;
     }, 0);
+
 
     return (
         <>
