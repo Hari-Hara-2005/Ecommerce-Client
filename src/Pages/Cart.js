@@ -475,13 +475,12 @@ const Cart = () => {
         dispatch(clearCart());
         setDialogOpen(false);
     };
-    const [prices, setPrices] = useState(49);
+    const [prices, setPrices] = useState(0);
     useEffect(() => {
         const fetchPrices = async () => {
             try {
                 const res = await api.get("/api/delivery");
-                const price = Number(res.data[0]?.price) || 0;
-
+                const price = Number(res.data?.price) || 0;
                 setPrices(price);
             } catch (err) {
                 console.log(err.message);
