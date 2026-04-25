@@ -844,7 +844,7 @@ const Cart = () => {
                                             <Typography variant="body2" fontWeight={600}>₹{subtotal}.00</Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <Typography variant="body2" color="text.secondary">Shipping</Typography>
+                                            <Typography variant="body2" color="text.secondary">Shipping(Round KumbaKonam Free Delivery)</Typography>
                                             <Typography variant="body2" fontWeight={600} color={shipping === 0 ? '#00C853' : dark}>
                                                 {shipping === 0 ? '✓ FREE' : `₹${shipping}`}
                                             </Typography>
