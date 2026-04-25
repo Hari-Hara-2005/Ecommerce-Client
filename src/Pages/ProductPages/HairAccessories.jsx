@@ -6,16 +6,19 @@ import {
   Stack,
   Rating,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
-
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import BlockIcon from "@mui/icons-material/Block";
 
 import Title from "../../Component/Title";
 import api from "../../utils/api";
@@ -29,7 +32,6 @@ const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(20px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 `;
-
 const rippleOut = keyframes`
   from { transform: scale(0); opacity: 0.45; }
   to   { transform: scale(4.5); opacity: 0; }
@@ -49,7 +51,15 @@ const badgeSlide = keyframes`
   to   { opacity: 1; transform: translateX(0); }
 `;
 
-
+const bellRing = keyframes`
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(15deg); }
+  30%  { transform: rotate(-12deg); }
+  45%  { transform: rotate(10deg); }
+  60%  { transform: rotate(-8deg); }
+  75%  { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+`;
 
 // ─── Shimmer skeleton ─────────────────────────────────────────────────────────
 const ShimmerBox = styled(Box)({
@@ -58,8 +68,56 @@ const ShimmerBox = styled(Box)({
   animation: `${shimmer} 1.6s infinite linear`,
 });
 
-// ─── Mobile image carousel ─────────────────────────────────────────────────────
-const MobileCarousel = ({ mainSrc, hoverSrc, alt }) => {
+// ─── Color Swatch Helper ──────────────────────────────────────────────────────
+const isValidCssColor = (str) => {
+  const s = new Option().style;
+  s.color = str;
+  return s.color !== "";
+};
+
+const ColorSwatch = ({ color, selected, onClick }) => {
+  const valid = isValidCssColor(color);
+  return (
+    <Tooltip title={color} placement="top" arrow>
+      <Box
+        onClick={onClick}
+        sx={{
+          width: 18,
+          height: 18,
+          borderRadius: "50%",
+          cursor: "pointer",
+          bgcolor: valid ? color : "#e5e7eb",
+          border: selected
+            ? "2.5px solid #ff2d74"
+            : "2px solid rgba(0,0,0,0.12)",
+          boxShadow: selected ? "0 0 0 2px rgba(255,45,116,0.25)" : "none",
+          transition: "transform 0.15s ease, box-shadow 0.15s ease",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          "&:hover": { transform: "scale(1.2)" },
+        }}
+      >
+        {!valid && (
+          <Typography
+            sx={{
+              fontSize: "0.45rem",
+              fontWeight: 700,
+              color: "#374151",
+              lineHeight: 1,
+            }}
+          >
+            {color.charAt(0).toUpperCase()}
+          </Typography>
+        )}
+      </Box>
+    </Tooltip>
+  );
+};
+
+// ─── Mobile image carousel ────────────────────────────────────────────────────
+const MobileCarousel = ({ mainSrc, hoverSrc, alt, isOutOfStock }) => {
   const images = [...new Set([mainSrc, hoverSrc].filter(Boolean))];
   const [idx, setIdx] = useState(0);
   const trackRef = useRef(null);
@@ -122,10 +180,42 @@ const MobileCarousel = ({ mainSrc, hoverSrc, alt }) => {
               objectFit: "cover",
               scrollSnapAlign: "start",
               display: "block",
+              filter: isOutOfStock ? "grayscale(40%)" : "none",
             }}
           />
         ))}
       </Box>
+
+      {isOutOfStock && (
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 4,
+            bgcolor: "rgba(0,0,0,0.42)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography
+            sx={{
+              color: "#fff",
+              fontWeight: 800,
+              fontSize: "0.65rem",
+              letterSpacing: 1.2,
+              textTransform: "uppercase",
+              bgcolor: "rgba(0,0,0,0.55)",
+              px: 1.2,
+              py: 0.4,
+              borderRadius: "20px",
+            }}
+          >
+            Out of Stock
+          </Typography>
+        </Box>
+      )}
+
       {images.length > 1 && (
         <Box
           sx={{
@@ -159,11 +249,20 @@ const MobileCarousel = ({ mainSrc, hoverSrc, alt }) => {
 };
 
 // ─── Product Card ─────────────────────────────────────────────────────────────
-const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
-
+const ArrivalCard = ({ item, index, onAddToCart, onNotifyMe }) => {
   const [cartAnim, setCartAnim] = useState(false);
   const [rippling, setRippling] = useState(false);
   const [added, setAdded] = useState(false);
+  const [notified, setNotified] = useState(false);
+
+  const hasColors = Array.isArray(item.colors) && item.colors.length > 0;
+  const [selectedColor, setSelectedColor] = useState(null);
+
+  useEffect(() => {
+    if (hasColors) setSelectedColor(item.colors[0]);
+  }, [item.product_id, hasColors]);
+
+  const outOfStock = item.in_stock === false || item.stock === 0;
 
   const discount =
     item.strikeout_price && item.strikeout_price > item.product_price
@@ -177,15 +276,37 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
       ? (item.strikeout_price - item.product_price).toLocaleString("en-IN")
       : 0;
 
-
   const handleCart = () => {
+    if (outOfStock) return;
+    if (hasColors && !selectedColor) {
+      toast.warning("Please select a color first!", {
+        position: "bottom-left",
+        autoClose: 2000,
+      });
+      return;
+    }
     setCartAnim(true);
     setRippling(true);
     setAdded(true);
     setTimeout(() => setCartAnim(false), 650);
     setTimeout(() => setRippling(false), 600);
     setTimeout(() => setAdded(false), 1800);
-    onAddToCart(item);
+    onAddToCart(item, selectedColor);
+  };
+
+  const handleNotify = () => {
+    if (notified) {
+      toast.info(
+        `You're already on the notify list for ${item.product_name}!`,
+        {
+          position: "bottom-left",
+          autoClose: 2000,
+        },
+      );
+      return;
+    }
+    setNotified(true);
+    onNotifyMe(item, selectedColor);
   };
 
   return (
@@ -204,12 +325,13 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
         animationDelay: `${index * 0.07}s`,
         transition:
           "transform 0.32s cubic-bezier(.34,1.56,.64,1), box-shadow 0.32s ease",
+        opacity: outOfStock ? 0.92 : 1,
         "&:hover": {
           transform: "translateY(-8px)",
-          boxShadow:
-            "0 24px 52px rgba(255,45,116,0.15), 0 4px 14px rgba(0,0,0,0.06)",
+          boxShadow: outOfStock
+            ? "0 12px 32px rgba(0,0,0,0.10)"
+            : "0 24px 52px rgba(255,45,116,0.15), 0 4px 14px rgba(0,0,0,0.06)",
         },
-        "&:hover .quickWa": { opacity: 1, transform: "translateX(0)" },
         "&:hover .mainImg": { opacity: 0, transform: "scale(1.05)" },
         "&:hover .hoverImg": { opacity: 1, transform: "scale(1.03)" },
       }}
@@ -218,13 +340,12 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
       <Box
         sx={{ position: "relative", overflow: "hidden", bgcolor: "#fdf7f3" }}
       >
-        {/* Desktop hover swap */}
         <Box
           sx={{
             display: { xs: "none", sm: "block" },
             position: "relative",
             height: { sm: 220, md: 240 },
-            cursor: "zoom-in",
+            cursor: outOfStock ? "default" : "zoom-in",
           }}
         >
           {[
@@ -245,21 +366,50 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
                 transition: "opacity 0.45s ease, transform 0.45s ease",
                 opacity: op,
                 transform: "scale(1)",
+                filter: outOfStock ? "grayscale(35%)" : "none",
               }}
             />
           ))}
+          {outOfStock && (
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 3,
+                bgcolor: "rgba(0,0,0,0.40)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "#fff",
+                  fontWeight: 800,
+                  fontSize: "0.7rem",
+                  letterSpacing: 1.4,
+                  textTransform: "uppercase",
+                  bgcolor: "rgba(0,0,0,0.5)",
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: "20px",
+                }}
+              >
+                Out of Stock
+              </Typography>
+            </Box>
+          )}
         </Box>
 
-        {/* Mobile carousel */}
         <Box sx={{ display: { xs: "block", sm: "none" } }}>
           <MobileCarousel
             mainSrc={item.image_url}
             hoverSrc={item.hover_image}
             alt={item.product_name}
+            isOutOfStock={outOfStock}
           />
         </Box>
 
-        {/* Label chip (if any) */}
         {item.label && (
           <Box
             sx={{
@@ -285,8 +435,7 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
           </Box>
         )}
 
-        {/* Discount badge top-right */}
-        {discount > 0 && (
+        {discount > 0 && !outOfStock && (
           <Box
             sx={{
               position: "absolute",
@@ -324,7 +473,6 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
           flexDirection: "column",
         }}
       >
-        {/* Brand */}
         <Box display="flex" alignItems="center" gap={0.4} mb={0.5}>
           <VerifiedIcon sx={{ fontSize: "0.65rem", color: "#3b82f6" }} />
           <Typography
@@ -340,7 +488,6 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
           </Typography>
         </Box>
 
-        {/* Name */}
         <Typography
           title={item.product_name}
           sx={{
@@ -358,7 +505,6 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
           {item.product_name}
         </Typography>
 
-        {/* Stars */}
         <Stack direction="row" alignItems="center" spacing={0.5} mb={0.8}>
           <Rating
             value={item.rating || 0}
@@ -381,8 +527,8 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
         {/* Price block */}
         <Box
           sx={{
-            bgcolor: "#fdf3f6",
-            border: "1px solid rgba(255,45,116,0.1)",
+            bgcolor: outOfStock ? "#f9fafb" : "#fdf3f6",
+            border: `1px solid ${outOfStock ? "#e5e7eb" : "rgba(255,45,116,0.1)"}`,
             borderRadius: "10px",
             px: 1.2,
             py: 0.8,
@@ -399,13 +545,14 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
               sx={{
                 fontWeight: 800,
                 fontSize: "1rem",
-                color: "#ff2d74",
+                color: outOfStock ? "#9ca3af" : "#ff2d74",
                 lineHeight: 1,
+                textDecoration: outOfStock ? "line-through" : "none",
               }}
             >
               ₹{item.product_price?.toLocaleString("en-IN")}
             </Typography>
-            {item.strikeout_price && (
+            {item.strikeout_price && !outOfStock && (
               <Typography
                 sx={{
                   textDecoration: "line-through",
@@ -418,69 +565,197 @@ const ArrivalCard = ({ item, index, isWished, onWishToggle, onAddToCart }) => {
               </Typography>
             )}
           </Stack>
-          {savings > 0 && (
+          {outOfStock ? (
             <Box display="flex" alignItems="center" gap={0.4} mt={0.3}>
-              <AutoAwesomeIcon sx={{ fontSize: "0.6rem", color: "#16a34a" }} />
+              <BlockIcon sx={{ fontSize: "0.6rem", color: "#ef4444" }} />
               <Typography
-                sx={{ fontSize: "0.62rem", color: "#16a34a", fontWeight: 700 }}
+                sx={{ fontSize: "0.62rem", color: "#ef4444", fontWeight: 700 }}
               >
-                Save ₹{savings}
+                Currently unavailable
               </Typography>
             </Box>
+          ) : (
+            savings > 0 && (
+              <Box display="flex" alignItems="center" gap={0.4} mt={0.3}>
+                <AutoAwesomeIcon
+                  sx={{ fontSize: "0.6rem", color: "#16a34a" }}
+                />
+                <Typography
+                  sx={{
+                    fontSize: "0.62rem",
+                    color: "#16a34a",
+                    fontWeight: 700,
+                  }}
+                >
+                  Save ₹{savings}
+                </Typography>
+              </Box>
+            )
           )}
         </Box>
+
+        {/* Low stock warning */}
+        {!outOfStock && item.stock !== undefined && item.stock <= 5 && (
+          <Typography
+            sx={{
+              fontSize: "0.65rem",
+              color: "#f59e0b",
+              fontWeight: 600,
+              mb: 0.5,
+            }}
+          >
+            ⚡ Only {item.stock} left!
+          </Typography>
+        )}
+
+        {/* ── Color Swatches ── */}
+        {hasColors && (
+          <Box mb={1}>
+            <Typography
+              sx={{
+                fontSize: "0.62rem",
+                color: "#6b7280",
+                fontWeight: 500,
+                mb: 0.5,
+              }}
+            >
+              Color:{" "}
+              <Box component="span" sx={{ color: "#111827", fontWeight: 700 }}>
+                {selectedColor || "—"}
+              </Box>
+            </Typography>
+            <Box display="flex" alignItems="center" gap={0.7} flexWrap="wrap">
+              {item.colors.map((color) => (
+                <ColorSwatch
+                  key={color}
+                  color={color}
+                  selected={selectedColor === color}
+                  onClick={() => setSelectedColor(color)}
+                />
+              ))}
+            </Box>
+          </Box>
+        )}
       </Box>
 
-      {/* ── Add to Cart ── */}
+      {/* ── CTA ── */}
       <Box sx={{ px: 1.5, pb: 1.5, mt: "auto" }}>
-        <Button
-          fullWidth
-          onClick={handleCart}
-          startIcon={
-            <ShoppingCartOutlinedIcon
+        {outOfStock ? (
+          <>
+            <Button
+              fullWidth
+              onClick={handleNotify}
+              startIcon={
+                <Box
+                  sx={{
+                    display: "inline-flex",
+                    animation: notified ? "none" : `${bellRing} 1.4s ease 0.6s`,
+                  }}
+                >
+                  {notified ? (
+                    <NotificationsActiveIcon
+                      sx={{ fontSize: "0.95rem !important" }}
+                    />
+                  ) : (
+                    <NotificationsNoneIcon
+                      sx={{ fontSize: "0.95rem !important" }}
+                    />
+                  )}
+                </Box>
+              }
+              variant={notified ? "outlined" : "contained"}
               sx={{
-                fontSize: "0.95rem !important",
-                animation: cartAnim ? `${cartJump} 0.6s ease` : "none",
-              }}
-            />
-          }
-          sx={{
-            borderRadius: "50px",
-            bgcolor: added ? "#16a34a" : "#ff2d74",
-            color: "#fff",
-            textTransform: "none",
-            fontWeight: 700,
-            fontSize: "0.75rem",
-            py: 0.95,
-            letterSpacing: added ? 0.8 : 0.4,
-            position: "relative",
-            overflow: "hidden",
-            transition:
-              "background-color 0.4s ease, letter-spacing 0.2s, transform 0.15s",
-            boxShadow: added
-              ? "0 4px 14px rgba(22,163,74,0.4)"
-              : "0 4px 14px rgba(255,45,116,0.32)",
-            "&:hover": {
-              bgcolor: added ? "#15803d" : "#e0185f",
-              transform: "translateY(-1px)",
-              boxShadow: "0 6px 20px rgba(255,45,116,0.45)",
-            },
-            "&:active": { transform: "scale(0.97)" },
-          }}
-        >
-          {rippling && (
-            <Box
-              sx={{
-                position: "absolute",
-                inset: 0,
                 borderRadius: "50px",
-                bgcolor: "rgba(255,255,255,0.3)",
-                animation: `${rippleOut} 0.55s ease-out`,
+                bgcolor: notified ? "transparent" : "#7c3aed",
+                color: notified ? "#7c3aed" : "#fff",
+                textTransform: "none",
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                py: 0.95,
+                border: `1.5px solid #7c3aed`,
+                letterSpacing: 0.4,
+                position: "relative",
+                overflow: "hidden",
+                transition: "all 0.3s ease",
+                boxShadow: notified
+                  ? "none"
+                  : "0 4px 14px rgba(124,58,237,0.35)",
+                "&:hover": notified
+                  ? { bgcolor: "#f3e8ff", borderColor: "#7c3aed" }
+                  : {
+                      bgcolor: "#6d28d9",
+                      boxShadow: "0 6px 20px rgba(124,58,237,0.45)",
+                      transform: "translateY(-1px)",
+                    },
+                "&:active": { transform: "scale(0.97)" },
               }}
-            />
-          )}
-          {added ? "✓ Added!" : "Add to Cart"}
-        </Button>
+            >
+              {notified ? "✓ Notify Me" : "Notify Me"}
+            </Button>
+            {notified && (
+              <Typography
+                sx={{
+                  fontSize: "0.6rem",
+                  color: "#7c3aed",
+                  textAlign: "center",
+                  mt: 0.5,
+                  fontWeight: 500,
+                }}
+              >
+                🔔 Added to your notify list
+              </Typography>
+            )}
+          </>
+        ) : (
+          <Button
+            fullWidth
+            onClick={handleCart}
+            startIcon={
+              <ShoppingCartOutlinedIcon
+                sx={{
+                  fontSize: "0.95rem !important",
+                  animation: cartAnim ? `${cartJump} 0.6s ease` : "none",
+                }}
+              />
+            }
+            sx={{
+              borderRadius: "50px",
+              bgcolor: added ? "#16a34a" : "#ff2d74",
+              color: "#fff",
+              textTransform: "none",
+              fontWeight: 700,
+              fontSize: "0.75rem",
+              py: 0.95,
+              letterSpacing: added ? 0.8 : 0.4,
+              position: "relative",
+              overflow: "hidden",
+              transition:
+                "background-color 0.4s ease, letter-spacing 0.2s, transform 0.15s",
+              boxShadow: added
+                ? "0 4px 14px rgba(22,163,74,0.4)"
+                : "0 4px 14px rgba(255,45,116,0.32)",
+              "&:hover": {
+                bgcolor: added ? "#15803d" : "#e0185f",
+                transform: "translateY(-1px)",
+                boxShadow: "0 6px 20px rgba(255,45,116,0.45)",
+              },
+              "&:active": { transform: "scale(0.97)" },
+            }}
+          >
+            {rippling && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "50px",
+                  bgcolor: "rgba(255,255,255,0.3)",
+                  animation: `${rippleOut} 0.55s ease-out`,
+                }}
+              />
+            )}
+            {added ? "✓ Added!" : "Add to Cart"}
+          </Button>
+        )}
       </Box>
     </Box>
   );
@@ -519,7 +794,6 @@ const HairAccessories = () => {
 
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [wishlist, setWishlist] = useState([]);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
@@ -552,27 +826,47 @@ const HairAccessories = () => {
     scrollRef.current.scrollBy({ left: dir * 520, behavior: "smooth" });
   };
 
-  const toggleWishlist = (id) =>
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-    );
-
-  const handleAddToCart = (item) => {
+  const handleAddToCart = (item, selectedColor) => {
     dispatch(
       addToCart({
         id: item.product_id,
         name: item.product_name,
         image: item.image_url,
         price: item.product_price,
+        originalPrice: item.strikeout_price,
         qty: 1,
+        stock: item.stock,
+        color: selectedColor || null,
       }),
     );
-    toast.success(`${item.product_name} added to cart 🛒`, { autoClose: 2000 });
+    toast.success(
+      `${item.product_name}${selectedColor ? ` (${selectedColor})` : ""} added to cart 🛒`,
+      { autoClose: 2000 },
+    );
+  };
+
+  const handleNotifyMe = (item, selectedColor) => {
+    dispatch(
+      addToCart({
+        id: `notify_${item.product_id}`,
+        name: item.product_name,
+        image: item.image_url,
+        price: item.product_price,
+        originalPrice: item.strikeout_price,
+        qty: 1,
+        stock: 0,
+        notify: true,
+        color: selectedColor || null,
+      }),
+    );
+    toast.success(
+      `🔔 We'll notify you when ${item.product_name} is back in stock!`,
+      { position: "bottom-left", autoClose: 3000 },
+    );
   };
 
   return (
     <Box>
-      {/* ── Header ── */}
       <Box
         sx={{
           display: "flex",
@@ -587,9 +881,7 @@ const HairAccessories = () => {
             subtitle="Made for Perfect Hair Days"
           />
         </Box>
-
         <Stack direction="row" alignItems="center" spacing={1}>
-          {/* Desktop scroll arrows */}
           {(canScrollLeft || canScrollRight) && (
             <Stack
               direction="row"
@@ -640,8 +932,6 @@ const HairAccessories = () => {
               </IconButton>
             </Stack>
           )}
-
-          {/* View all */}
           <Link
             to="category/hair-accessories"
             style={{ textDecoration: "none" }}
@@ -668,16 +958,13 @@ const HairAccessories = () => {
                 },
               }}
             >
-              View all
-              <ChevronRightIcon sx={{ fontSize: "1rem" }} />
+              View all <ChevronRightIcon sx={{ fontSize: "1rem" }} />
             </Box>
           </Link>
         </Stack>
       </Box>
 
-      {/* ── Scroll strip ── */}
       <Box sx={{ position: "relative" }}>
-        {/* Left fade */}
         {canScrollLeft && (
           <Box
             sx={{
@@ -694,7 +981,6 @@ const HairAccessories = () => {
             }}
           />
         )}
-        {/* Right fade */}
         {canScrollRight && (
           <Box
             sx={{
@@ -711,7 +997,6 @@ const HairAccessories = () => {
             }}
           />
         )}
-
         <Box
           ref={scrollRef}
           sx={{
@@ -726,13 +1011,10 @@ const HairAccessories = () => {
             scrollBehavior: "smooth",
           }}
         >
-          {/* Skeletons */}
           {isLoading &&
             Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} index={i} />
             ))}
-
-          {/* Empty */}
           {!isLoading && products.length === 0 && (
             <Box sx={{ py: 6, textAlign: "center", width: "100%" }}>
               <Typography
@@ -747,17 +1029,14 @@ const HairAccessories = () => {
               </Typography>
             </Box>
           )}
-
-          {/* Cards */}
           {!isLoading &&
             products.map((item, index) => (
               <ArrivalCard
                 key={item.product_id}
                 item={item}
                 index={index}
-                isWished={wishlist.includes(item.product_id)}
-                onWishToggle={toggleWishlist}
                 onAddToCart={handleAddToCart}
+                onNotifyMe={handleNotifyMe}
               />
             ))}
         </Box>
