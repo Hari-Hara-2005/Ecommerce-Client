@@ -255,12 +255,16 @@ const ArrivalCard = ({ item, index, onAddToCart, onNotifyMe }) => {
   const [added, setAdded] = useState(false);
   const [notified, setNotified] = useState(false);
 
-  const hasColors = Array.isArray(item.colors) && item.colors.length > 0;
+  const hasColors = item?.colors?.length > 0;
   const [selectedColor, setSelectedColor] = useState(null);
 
   useEffect(() => {
-    if (hasColors) setSelectedColor(item.colors[0]);
-  }, [item.product_id, hasColors]);
+    if (item?.colors?.length) {
+      setSelectedColor(item.colors[0]);
+    } else {
+      setSelectedColor(null);
+    }
+  }, [item.product_id, item.colors]);
 
   const outOfStock = item.in_stock === false || item.stock === 0;
 
