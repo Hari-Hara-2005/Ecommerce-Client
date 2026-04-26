@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     Grid, Box, Button, Typography, TextField, Chip,
     Stack, Divider, Paper, IconButton, DialogContent,
-    InputAdornment, Fade, Slide, Dialog, Tooltip,
+    InputAdornment, Fade, Slide, Dialog, Tooltip, Radio,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -20,13 +20,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import Footer from '../Component/Footer';
 import { removeFromCart, clearCart, updateQuantity } from '../redux/cartSlice';
 import Navbar from '../Component/Navbar';
 import Title from '../Component/Title.jsx';
 import TopBar from '../Component/Announcement.jsx';
 import { Helmet } from 'react-helmet-async';
-import { useEffect } from 'react';
 import api from '../utils/api.js';
 
 const FREE_SHIPPING_THRESHOLD = 299;
@@ -41,6 +41,9 @@ const brown = '#92553D';
 const brownLight = '#fdf5f2';
 const dark = '#1a1a1a';
 const surface = '#FAFAFA';
+const green = '#00C853';
+const greenLight = '#f0fdf6';
+const greenDark = '#007a4d';
 
 // ─── Hover CSS ────────────────────────────────────────────────────────────────
 const HoverStyles = () => (
@@ -90,6 +93,29 @@ const HoverStyles = () => (
         .kt-img-wrap img { transition: transform 0.4s cubic-bezier(.4,0,.2,1); }
         .kt-cart-card:hover .kt-img-wrap img,
         .kt-notify-card:hover .kt-img-wrap img { transform: scale(1.06); }
+
+        .kt-zone-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1.5px solid #f0f0f0;
+            background: #fafafa;
+            transition: all 0.2s cubic-bezier(.4,0,.2,1);
+            margin-bottom: 8px;
+        }
+        .kt-zone-option:last-child { margin-bottom: 0; }
+        .kt-zone-option:hover { border-color: rgba(233,30,140,0.3); background: #fff; }
+        .kt-zone-option.zone-free {
+            border-color: ${green};
+            background: ${greenLight};
+        }
+        .kt-zone-option.zone-paid {
+            border-color: ${pink};
+            background: ${pinkLight};
+        }
 
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
         @keyframes bellRing {
@@ -174,8 +200,90 @@ const CartColorDot = ({ color }) => {
     );
 };
 
+// ─── Delivery Zone Selector ───────────────────────────────────────────────────
+const DeliveryZoneSelector = ({ zone, setZone, prices, subtotal }) => {
+    const isThresholdMet = subtotal >= FREE_SHIPPING_THRESHOLD && subtotal > 0;
+
+    const zones = [
+        {
+            value: 'kumbakonam',
+            label: 'Kumbakonam & nearby areas',
+            sub: 'Town + surrounding villages & district',
+            price: 'FREE',
+            priceColor: greenDark,
+            dotColor: green,
+            selectedClass: 'zone-free',
+        },
+        {
+            value: 'other',
+            label: 'Rest of Tamil Nadu & India',
+            sub: 'Flat delivery fee applied',
+            price: isThresholdMet ? 'FREE' : `+ ₹${prices}`,
+            priceColor: isThresholdMet ? greenDark : pink,
+            dotColor: isThresholdMet ? green : pink,
+            selectedClass: 'zone-paid',
+        },
+    ];
+
+    return (
+        <Box>
+            <Typography variant="caption" color="text.secondary" fontWeight={600}
+                textTransform="uppercase" letterSpacing={1} mb={1.2} display="flex" alignItems="center" gap={0.5}>
+                <LocalShippingOutlinedIcon sx={{ fontSize: 14 }} />
+                Where should we deliver?
+            </Typography>
+
+            {zones.map((opt) => (
+                <Box
+                    key={opt.value}
+                    className={`kt-zone-option${zone === opt.value ? ` ${opt.selectedClass}` : ''}`}
+                    onClick={() => setZone(opt.value)}
+                >
+                    <Radio
+                        checked={zone === opt.value}
+                        size="small"
+                        sx={{
+                            p: 0, flexShrink: 0,
+                            color: '#ccc',
+                            '&.Mui-checked': { color: opt.dotColor },
+                        }}
+                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography variant="body2" fontWeight={700} color={dark} fontSize={13}>
+                            {opt.label}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" display="block">
+                            {opt.sub}
+                        </Typography>
+                    </Box>
+                    <Typography variant="body2" fontWeight={800} color={opt.priceColor} whiteSpace="nowrap" fontSize={13}>
+                        {opt.price}
+                    </Typography>
+                </Box>
+            ))}
+
+            {!isThresholdMet && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6, mt: 1 }}>
+                    <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: green, flexShrink: 0 }} />
+                    <Typography variant="caption" color="text.secondary" fontSize={11}>
+                        Add ₹{FREE_SHIPPING_THRESHOLD - subtotal} more for free delivery everywhere
+                    </Typography>
+                </Box>
+            )}
+            {isThresholdMet && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6, mt: 1 }}>
+                    <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: green, flexShrink: 0 }} />
+                    <Typography variant="caption" color={greenDark} fontWeight={600} fontSize={11}>
+                        🎉 Free delivery unlocked for all locations!
+                    </Typography>
+                </Box>
+            )}
+        </Box>
+    );
+};
+
 // ─── Order Dialog ─────────────────────────────────────────────────────────────
-const OrderDialog = ({ open, onClose, cartItems, notifyItems, total, onConfirm }) => {
+const OrderDialog = ({ open, onClose, cartItems, notifyItems, total, zone, onConfirm }) => {
     const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', pincode: '', city: '' });
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
@@ -273,6 +381,22 @@ const OrderDialog = ({ open, onClose, cartItems, notifyItems, total, onConfirm }
                                         ))}
                                     </Stack>
                                     <Divider sx={{ my: 1, borderColor: 'rgba(233,30,140,0.15)' }} />
+
+                                    {/* Zone badge in dialog */}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                                        <Typography variant="caption" color="text.secondary">Delivery Zone</Typography>
+                                        <Chip
+                                            label={zone === 'kumbakonam' ? '📍 Kumbakonam & nearby' : '🚚 Tamil Nadu / India'}
+                                            size="small"
+                                            sx={{
+                                                height: 20, fontSize: 10, fontWeight: 700,
+                                                bgcolor: zone === 'kumbakonam' ? '#e8f7f0' : pinkLight,
+                                                color: zone === 'kumbakonam' ? greenDark : pinkDark,
+                                                '& .MuiChip-label': { px: 1 },
+                                            }}
+                                        />
+                                    </Box>
+
                                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                         <Typography fontWeight={800} color={pink} fontSize={15}>Total: ₹{total}</Typography>
                                     </Box>
@@ -408,7 +532,7 @@ const OrderDialog = ({ open, onClose, cartItems, notifyItems, total, onConfirm }
 };
 
 // ─── Mobile Sticky Bar ────────────────────────────────────────────────────────
-const MobileStickyBar = ({ total, itemCount, notifyCount, isOrderEnabled, onPlaceOrder, shipping, subtotal }) => (
+const MobileStickyBar = ({ total, itemCount, notifyCount, isOrderEnabled, onPlaceOrder, shipping, subtotal, zone }) => (
     <Box className="kt-sticky-bar" sx={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1200,
         pb: 'env(safe-area-inset-bottom)', bgcolor: '#fff',
@@ -426,10 +550,14 @@ const MobileStickyBar = ({ total, itemCount, notifyCount, isOrderEnabled, onPlac
                         </Box>
                     )}
                     {shipping === 0 && subtotal > 0 && (
-                        <Box component="span" sx={{ ml: 0.8, color: '#00C853', fontWeight: 700 }}>· FREE shipping</Box>
+                        <Box component="span" sx={{ ml: 0.8, color: greenDark, fontWeight: 700 }}>· FREE shipping</Box>
                     )}
                 </Typography>
                 <Typography fontWeight={900} fontSize={22} color={pink} lineHeight={1.1} display="block">₹{total}</Typography>
+                {/* Zone pill on mobile */}
+                <Typography variant="caption" color="text.secondary" fontSize={10}>
+                    {zone === 'kumbakonam' ? '📍 Kumbakonam area' : '🚚 Outside Kumbakonam'}
+                </Typography>
             </Box>
             <Button variant="contained" size="large" endIcon={<ShoppingCartCheckoutIcon />}
                 onClick={onPlaceOrder} disabled={!isOrderEnabled}
@@ -462,6 +590,9 @@ const Cart = () => {
     const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
 
+    // Zone selector: 'kumbakonam' = free, 'other' = paid
+    const [zone, setZone] = useState('kumbakonam');
+
     // Split into regular and notify-me items
     const cartItems = allCartItems.filter(item => !item.notify);
     const notifyItems = allCartItems.filter(item => item.notify);
@@ -475,16 +606,14 @@ const Cart = () => {
     };
     const handleClearCart = () => dispatch(clearCart());
 
-    // ── WhatsApp message — includes regular orders AND notify-me items ────────
+    // ── WhatsApp message ──────────────────────────────────────────────────────
     const handleShoppingClick = (form) => {
-        // Regular order items
         const orderLines = cartItems.map(item => {
             const qty = item.quantity || item.qty || 1;
             const colorPart = item.color ? ` | Color: ${item.color}` : '';
             return `• ${item.name}${colorPart} (x${qty}) — ₹${item.price * qty}`;
         }).join('\n');
 
-        // Notify-me items
         const notifyLines = notifyItems.map(item => {
             const colorPart = item.color ? ` (${item.color})` : '';
             return `• ${item.name}${colorPart} — I'm interested, please notify me when it's back in stock!`;
@@ -500,8 +629,12 @@ const Cart = () => {
         fullMessage += `*Delivery Address*\n`;
         fullMessage += `${form.address}, ${form.city} - ${form.pincode}\n\n`;
 
+        fullMessage += `*Delivery Zone:* ${zone === 'kumbakonam' ? '📍 Kumbakonam & nearby areas (Free Delivery)' : '🚚 Rest of Tamil Nadu / India'}\n\n`;
+
         if (cartItems.length > 0) {
             fullMessage += `*Order Items*\n${orderLines}\n\n`;
+            fullMessage += `*Subtotal: ₹${subtotal}*\n`;
+            fullMessage += `*Shipping: ${shipping === 0 ? 'FREE' : `₹${shipping}`}*\n`;
             fullMessage += `*Total: ₹${total}*\n\n`;
         }
 
@@ -535,10 +668,18 @@ const Cart = () => {
     }, []);
 
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || item.qty || 1)), 0);
-    const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : prices;
+
+    // Shipping logic: free for kumbakonam always, free everywhere above threshold, else charge
+    const shipping = subtotal === 0
+        ? 0
+        : subtotal >= FREE_SHIPPING_THRESHOLD
+            ? 0
+            : zone === 'kumbakonam'
+                ? 0
+                : prices;
+
     const total = subtotal + shipping;
     const toFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
-    // Enable order if: has in-stock items above minimum OR only notify-me items
     const isOrderEnabled = subtotal >= MIN_ORDER_AMOUNT || (cartItems.length === 0 && notifyItems.length > 0);
     const totalSavings = cartItems.reduce((sum, item) => {
         const orig = item.originalPrice || item.mrp || 0;
@@ -645,8 +786,7 @@ const Cart = () => {
                                                                     size="small"
                                                                     sx={{
                                                                         mt: 0.4, height: 22, fontSize: 11,
-                                                                        bgcolor: pinkLight,
-                                                                        color: pinkDark,
+                                                                        bgcolor: pinkLight, color: pinkDark,
                                                                         border: `1px solid rgba(233,30,140,0.2)`,
                                                                         fontWeight: 600,
                                                                         '& .MuiChip-label': { px: 0.8 },
@@ -670,7 +810,7 @@ const Cart = () => {
                                                                 <Typography variant="body2" color="#bbb" sx={{ textDecoration: 'line-through', fontSize: 13 }}>₹{originalPrice}</Typography>
                                                             )}
                                                             {savings > 0 && (
-                                                                <Box sx={{ fontSize: 11, fontWeight: 600, px: 1, py: '2px', borderRadius: '20px', bgcolor: '#e8f7f0', color: '#007a4d' }}>
+                                                                <Box sx={{ fontSize: 11, fontWeight: 600, px: 1, py: '2px', borderRadius: '20px', bgcolor: '#e8f7f0', color: greenDark }}>
                                                                     Save ₹{savings}
                                                                 </Box>
                                                             )}
@@ -704,11 +844,9 @@ const Cart = () => {
                                     {/* ── Notify Me Section ── */}
                                     {notifyItems.length > 0 && (
                                         <Box>
-                                            {/* Section header */}
                                             <Box sx={{
                                                 display: 'flex', alignItems: 'center', gap: 1.2,
-                                                mb: 1.5, mt: cartItems.length > 0 ? 1 : 0,
-                                                px: 1,
+                                                mb: 1.5, mt: cartItems.length > 0 ? 1 : 0, px: 1,
                                             }}>
                                                 <Box className="bell-animate" sx={{ display: 'inline-flex' }}>
                                                     <NotificationImportantIcon sx={{ color: purple, fontSize: '1.2rem' }} />
@@ -716,11 +854,8 @@ const Cart = () => {
                                                 <Typography fontWeight={700} fontSize={15} color={purple}>
                                                     Notify Me When Back in Stock
                                                 </Typography>
-                                                <Chip
-                                                    label={notifyItems.length}
-                                                    size="small"
-                                                    sx={{ bgcolor: purpleLight, color: purple, fontWeight: 800, height: 20, '& .MuiChip-label': { px: 1 } }}
-                                                />
+                                                <Chip label={notifyItems.length} size="small"
+                                                    sx={{ bgcolor: purpleLight, color: purple, fontWeight: 800, height: 20, '& .MuiChip-label': { px: 1 } }} />
                                             </Box>
 
                                             {notifyItems.map((item) => (
@@ -728,29 +863,20 @@ const Cart = () => {
                                                     sx={{
                                                         p: 2, mb: 1.5, borderRadius: '20px',
                                                         border: `1px solid rgba(124,58,237,0.18)`,
-                                                        bgcolor: purpleLight,
-                                                        position: 'relative',
-                                                        overflow: 'hidden',
+                                                        bgcolor: purpleLight, position: 'relative', overflow: 'hidden',
                                                     }}>
-                                                    {/* purple top strip */}
                                                     <Box sx={{
                                                         position: 'absolute', top: 0, left: 0, right: 0, height: 3,
                                                         background: `linear-gradient(90deg, #6d28d9, ${purple}, #a78bfa)`,
                                                     }} />
-
                                                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                                         <Box className="kt-img-wrap" sx={{ position: 'relative', flexShrink: 0 }}>
                                                             <Box component="img"
                                                                 src={item.image || item.img || item.imageUrl}
                                                                 alt={item.name}
-                                                                sx={{
-                                                                    width: 80, height: 80, borderRadius: '12px',
-                                                                    objectFit: 'cover', bgcolor: '#f0e8ff',
-                                                                    display: 'block', filter: 'grayscale(30%)',
-                                                                }}
+                                                                sx={{ width: 80, height: 80, borderRadius: '12px', objectFit: 'cover', bgcolor: '#f0e8ff', display: 'block', filter: 'grayscale(30%)' }}
                                                                 onError={e => { e.target.style.display = 'none'; }}
                                                             />
-                                                            {/* Bell badge on image */}
                                                             <Box sx={{
                                                                 position: 'absolute', bottom: -6, right: -6,
                                                                 bgcolor: purple, borderRadius: '50%',
@@ -763,44 +889,26 @@ const Cart = () => {
                                                         </Box>
 
                                                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                                                            <Typography fontWeight={700} fontSize={14} color={dark} noWrap>
-                                                                {item.name}
-                                                            </Typography>
-
-                                                            {/* Color chip */}
+                                                            <Typography fontWeight={700} fontSize={14} color={dark} noWrap>{item.name}</Typography>
                                                             {item.color && (
                                                                 <Chip
-                                                                    icon={
-                                                                        <Box sx={{ display: 'flex', alignItems: 'center', pl: 0.3 }}>
-                                                                            <CartColorDot color={item.color} />
-                                                                        </Box>
-                                                                    }
-                                                                    label={item.color}
-                                                                    size="small"
+                                                                    icon={<Box sx={{ display: 'flex', alignItems: 'center', pl: 0.3 }}><CartColorDot color={item.color} /></Box>}
+                                                                    label={item.color} size="small"
                                                                     sx={{
                                                                         mt: 0.5, height: 20, fontSize: 11,
-                                                                        bgcolor: 'rgba(124,58,237,0.12)',
-                                                                        color: purple,
-                                                                        border: `1px solid rgba(124,58,237,0.25)`,
-                                                                        fontWeight: 600,
-                                                                        '& .MuiChip-label': { px: 0.8 },
-                                                                        '& .MuiChip-icon': { ml: 0.5, mr: -0.3 },
+                                                                        bgcolor: 'rgba(124,58,237,0.12)', color: purple,
+                                                                        border: `1px solid rgba(124,58,237,0.25)`, fontWeight: 600,
+                                                                        '& .MuiChip-label': { px: 0.8 }, '& .MuiChip-icon': { ml: 0.5, mr: -0.3 },
                                                                     }}
                                                                 />
                                                             )}
-
-                                                            {/* Price (greyed out / strikethrough) */}
                                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.8 }}>
                                                                 <Typography fontWeight={600} color="#9ca3af" fontSize={14} sx={{ textDecoration: 'line-through' }}>
                                                                     ₹{item.price}
                                                                 </Typography>
-                                                                <Chip
-                                                                    label="Out of Stock"
-                                                                    size="small"
-                                                                    sx={{ height: 18, fontSize: 10, bgcolor: '#fef2f2', color: '#ef4444', fontWeight: 700, '& .MuiChip-label': { px: 0.8 } }}
-                                                                />
+                                                                <Chip label="Out of Stock" size="small"
+                                                                    sx={{ height: 18, fontSize: 10, bgcolor: '#fef2f2', color: '#ef4444', fontWeight: 700, '& .MuiChip-label': { px: 0.8 } }} />
                                                             </Box>
-
                                                             <Typography sx={{ fontSize: '0.72rem', color: purple, fontWeight: 600, mt: 0.5, fontStyle: 'italic' }}>
                                                                 🔔 We'll notify you when it's back!
                                                             </Typography>
@@ -843,18 +951,14 @@ const Cart = () => {
                                             <Typography variant="body2" color="text.secondary">Subtotal</Typography>
                                             <Typography variant="body2" fontWeight={600}>₹{subtotal}.00</Typography>
                                         </Box>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <Typography variant="body2" color="text.secondary">Shipping(Round KumbaKonam Free Delivery)</Typography>
-                                            <Typography variant="body2" fontWeight={600} color={shipping === 0 ? '#00C853' : dark}>
-                                                {shipping === 0 ? '✓ FREE' : `₹${shipping}`}
-                                            </Typography>
-                                        </Box>
+
                                         {totalSavings > 0 && (
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <Typography variant="body2" color="text.secondary">You saved</Typography>
-                                                <Typography variant="body2" fontWeight={600} color="#007a4d">₹{totalSavings}.00</Typography>
+                                                <Typography variant="body2" fontWeight={600} color={greenDark}>₹{totalSavings}.00</Typography>
                                             </Box>
                                         )}
+
                                         {/* Notify items summary row */}
                                         {notifyItems.length > 0 && (
                                             <Box sx={{
@@ -871,27 +975,45 @@ const Cart = () => {
                                         )}
                                     </Stack>
 
-                                    {/* Free shipping progress */}
-                                    {toFreeShipping > 0 && subtotal > 0 && (
-                                        <Box sx={{ mt: 2, p: 1.5, borderRadius: '12px', bgcolor: pinkLight, border: `1px solid rgba(233,30,140,0.15)` }}>
+                                    <Divider sx={{ my: 2 }} />
+
+                                    {/* ── Delivery Zone Selector ── */}
+                                    <DeliveryZoneSelector
+                                        zone={zone}
+                                        setZone={setZone}
+                                        prices={prices}
+                                        subtotal={subtotal}
+                                    />
+
+                                    {/* Free shipping progress bar (only for 'other' zone below threshold) */}
+                                    {zone === 'other' && toFreeShipping > 0 && subtotal > 0 && (
+                                        <Box sx={{ mt: 1.5, p: 1.5, borderRadius: '12px', bgcolor: pinkLight, border: `1px solid rgba(233,30,140,0.15)` }}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                                                 <Typography variant="caption" color={pink} fontWeight={600}>Free shipping at ₹{FREE_SHIPPING_THRESHOLD}</Typography>
                                                 <Typography variant="caption" color={pink} fontWeight={700}>₹{toFreeShipping} away</Typography>
                                             </Box>
                                             <Box sx={{ height: 6, borderRadius: 4, bgcolor: 'rgba(233,30,140,0.15)', overflow: 'hidden' }}>
-                                                <Box sx={{ height: '100%', borderRadius: 4, bgcolor: pink, width: `${Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)}%`, transition: 'width 0.5s ease' }} />
+                                                <Box sx={{
+                                                    height: '100%', borderRadius: 4, bgcolor: pink,
+                                                    width: `${Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)}%`,
+                                                    transition: 'width 0.5s ease'
+                                                }} />
                                             </Box>
                                         </Box>
                                     )}
-                                    {subtotal >= FREE_SHIPPING_THRESHOLD && subtotal > 0 && (
-                                        <Box sx={{ mt: 2, p: 1.5, borderRadius: '12px', bgcolor: '#e8f7f0', border: '1px solid rgba(0,168,107,0.2)' }}>
-                                            <Typography variant="caption" color="#007a4d" fontWeight={600}>🎉 Free shipping unlocked!</Typography>
-                                        </Box>
-                                    )}
 
-                                    <Divider sx={{ my: 2.5 }} />
+                                    <Divider sx={{ my: 2 }} />
 
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                    {/* Shipping line */}
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Shipping</Typography>
+                                        <Typography variant="body2" fontWeight={700} color={shipping === 0 ? greenDark : dark}>
+                                            {shipping === 0 ? '✓ FREE' : `₹${shipping}`}
+                                        </Typography>
+                                    </Box>
+
+                                    {/* Total */}
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 1 }}>
                                         <Typography fontWeight={800} fontSize={17} color={dark}>Total</Typography>
                                         <Box sx={{ textAlign: 'right' }}>
                                             <Typography fontWeight={900} fontSize={24} color={pink} lineHeight={1}>₹{total}</Typography>
@@ -945,10 +1067,14 @@ const Cart = () => {
 
             {hasAnything && (
                 <MobileStickyBar
-                    total={total} itemCount={cartItems.length} notifyCount={notifyItems.length}
+                    total={total}
+                    itemCount={cartItems.length}
+                    notifyCount={notifyItems.length}
                     isOrderEnabled={isOrderEnabled}
                     onPlaceOrder={() => setDialogOpen(true)}
-                    shipping={shipping} subtotal={subtotal}
+                    shipping={shipping}
+                    subtotal={subtotal}
+                    zone={zone}
                 />
             )}
 
@@ -958,6 +1084,7 @@ const Cart = () => {
                 cartItems={cartItems}
                 notifyItems={notifyItems}
                 total={total}
+                zone={zone}
                 onConfirm={handleShoppingClick}
             />
 
