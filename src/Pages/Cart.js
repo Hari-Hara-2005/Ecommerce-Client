@@ -29,7 +29,7 @@ import { Helmet } from 'react-helmet-async';
 import { useEffect } from 'react';
 import api from '../utils/api.js';
 
-const FREE_SHIPPING_THRESHOLD = 249;
+const FREE_SHIPPING_THRESHOLD = 299;
 const MIN_ORDER_AMOUNT = 100;
 
 const pink = '#E91E8C';
@@ -373,7 +373,7 @@ const OrderDialog = ({ open, onClose, cartItems, notifyItems, total, onConfirm }
                                     '&:hover': { background: `linear-gradient(135deg, #880e4f, ${pinkDark})`, boxShadow: `0 12px 32px rgba(233,30,140,0.45)`, transform: 'translateY(-1px)' }
                                 }}>
                                 {cartItems.length > 0 && notifyItems.length > 0
-                                    ? 'Place Order + Notify Me via WhatsApp'
+                                    ? 'Place Order'
                                     : cartItems.length > 0
                                         ? 'Place Order via WhatsApp'
                                         : 'Notify Me via WhatsApp'}
