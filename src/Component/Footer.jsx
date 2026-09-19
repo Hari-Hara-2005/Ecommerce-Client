@@ -738,21 +738,6 @@ function Footer() {
           >
             © {new Date().getFullYear()} Kudanthai Trends. All Rights Reserved.
           </Typography>
-          <Typography
-            variant="body2"
-            color="GrayText"
-            style={{ marginTop: "1rem" }}
-          >
-            Designed & Developed by{"  "}
-            <a
-              href="https://deltainfo-eight.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "white", textDecoration: "none" }}
-            >
-              Delta Info
-            </a>
-          </Typography>
         </Stack>
       </Stack>
     </>
